@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en-AU">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Future Me · AI money companion prototype</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <div class="stage">
+    <aside class="presenter">
+      <h1>Future Me <small>Demo controls · Westpac AI &amp; Banking hackathon</small></h1>
+      <div class="scenes">
+        <button data-action="scene" data-scene="1">1 · Spending insight <kbd>1</kbd></button>
+        <button data-action="scene" data-scene="2">2 · Set the car goal <kbd>2</kbd></button>
+        <button data-action="scene" data-scene="3">3 · Unlock an offer <kbd>3</kbd></button>
+        <button data-action="scene" data-scene="4">4 · A tough month <kbd>4</kbd></button>
+        <button data-action="scene" data-scene="5">5 · Future you <kbd>5</kbd></button>
+      </div>
+      <div class="row">
+        <select id="scenario" aria-label="Scenario">
+          <option value="normal">Normal month</option>
+          <option value="tough">Tough month</option>
+        </select>
+        <button data-action="reset" class="small-btn">Reset <kbd>0</kbd></button>
+      </div>
+      <div class="row">
+        <label class="file">📄 Load CSV (bonus)<input type="file" id="csv" accept=".csv,text/csv"></label>
+        <button id="clear-csv" class="small-btn">Demo data</button>
+      </div>
+      <div class="ai-status" id="ai-status">Live AI: checking…</div>
+      <p class="fine">Prototype only. One fictional customer, mock transactions, no real account data. Everything the AI says is general information, not financial advice. The companion is opt-in and never blocks a payment. Runs offline from this folder.</p>
+    </aside>
+
+    <div class="phone-wrap">
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="notch"></div>
+          <header class="appbar">
+            <div><b>Future Me</b><small id="appbar-sub">Your money, a few steps ahead</small></div>
+            <div class="ava" id="appbar-ava">A</div>
+          </header>
+          <main id="view"></main>
+          <nav class="tabbar">
+            <button data-action="tab" data-tab="home"><span>🏠</span>Home</button>
+            <button data-action="tab" data-tab="insights"><span>🔍</span>Insights</button>
+            <button data-action="tab" data-tab="goal"><span>🚗</span>Goal</button>
+            <button data-action="tab" data-tab="rewards"><span>🏆</span>Rewards</button>
+            <button data-action="tab" data-tab="chat"><span>💬</span>Ask</button>
+          </nav>
+          <div id="sheet" data-action="sheet-bg"></div>
+          <div id="toast"></div>
+          <div id="confetti"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/data.js"></script>
+  <script src="js/engine.js"></script>
+  <script src="js/charts.js"></script>
+  <script src="js/art.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

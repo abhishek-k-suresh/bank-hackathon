@@ -1,0 +1,406 @@
+date,description,amount,category
+2026-05-18,"Aussie Broadband",-79.00,Bills
+2026-05-18,"Elk Espresso",-9.50,EatingOut
+2026-05-19,"Elk Espresso",-5.50,EatingOut
+2026-05-20,"Elk Espresso",-9.50,EatingOut
+2026-05-21,"Salary – Studio Nine Design",2120.00,Income
+2026-05-21,"Transfer to Car Fund",-150.00,Savings
+2026-05-21,"Ampol Burleigh Heads",-74.77,Transport
+2026-05-22,"Elk Espresso",-5.50,EatingOut
+2026-05-22,"Guzman y Gomez",-17.70,EatingOut
+2026-05-22,"Uber Eats",-40.81,EatingOut
+2026-05-22,"Cotton On",-61.65,Shopping
+2026-05-23,"iCloud+ 2TB",-14.99,Subscriptions
+2026-05-23,"Woolworths Burleigh",-93.76,Groceries
+2026-05-23,"Uber Eats",-35.18,EatingOut
+2026-05-23,"Burleigh Brewing Co",-50.05,Fun
+2026-05-24,"Priceline Pharmacy",-36.00,Fun
+2026-05-25,"Origin Energy",-92.00,Bills
+2026-05-25,"Elk Espresso",-5.50,EatingOut
+2026-05-26,"Elk Espresso",-9.50,EatingOut
+2026-05-27,"Westpac Car Insurance",-89.00,Bills
+2026-05-27,"Elk Espresso",-5.50,EatingOut
+2026-05-27,"Boost Juice",-16.07,EatingOut
+2026-05-28,"Elk Espresso",-9.50,EatingOut
+2026-05-29,"Guzman y Gomez",-13.97,EatingOut
+2026-05-29,"DoorDash",-31.10,EatingOut
+2026-05-30,"Coles West Burleigh",-101.96,Groceries
+2026-05-30,"DoorDash",-45.48,EatingOut
+2026-06-01,"Rent – Surfers Paradise",-1560.00,Rent
+2026-06-01,"Elk Espresso",-5.50,EatingOut
+2026-06-01,"Ampol Burleigh Heads",-66.99,Transport
+2026-06-02,"FitFlex Gym",-64.00,Subscriptions
+2026-06-02,"Elk Espresso",-5.50,EatingOut
+2026-06-03,"Elk Espresso",-5.50,EatingOut
+2026-06-03,"Boost Juice",-18.81,EatingOut
+2026-06-04,"Salary – Studio Nine Design",2120.00,Income
+2026-06-04,"Transfer to Car Fund",-150.00,Savings
+2026-06-04,"Netflix",-18.99,Subscriptions
+2026-06-04,"Elk Espresso",-9.50,EatingOut
+2026-06-05,"Elk Espresso",-5.50,EatingOut
+2026-06-05,"Uber Eats",-43.28,EatingOut
+2026-06-06,"Medibank Health Cover",-148.00,Bills
+2026-06-06,"Coles West Burleigh",-94.33,Groceries
+2026-06-07,"Spotify Premium",-13.99,Subscriptions
+2026-06-08,"Elk Espresso",-5.50,EatingOut
+2026-06-08,"Chemist Warehouse",-45.73,Fun
+2026-06-09,"Apple Music",-12.99,Subscriptions
+2026-06-10,"Afterpay instalment",-45.00,Shopping
+2026-06-10,"Elk Espresso",-5.50,EatingOut
+2026-06-10,"Boost Juice",-14.89,EatingOut
+2026-06-11,"Ampol Burleigh Heads",-63.48,Transport
+2026-06-12,"Disney+",-15.99,Subscriptions
+2026-06-12,"DoorDash",-31.49,EatingOut
+2026-06-13,"ALDI Varsity Lakes",-105.61,Groceries
+2026-06-13,"DoorDash",-42.22,EatingOut
+2026-06-13,"Burleigh Brewing Co",-39.99,Fun
+2026-06-14,"Peloton App",-19.99,Subscriptions
+2026-06-14,"Translink go card",-20.00,Transport
+2026-06-15,"Personal loan repayment",-166.00,Loan
+2026-06-15,"Elk Espresso",-9.50,EatingOut
+2026-06-15,"Zambrero",-18.45,EatingOut
+2026-06-16,"Optus Mobile",-49.00,Bills
+2026-06-16,"Elk Espresso",-5.50,EatingOut
+2026-06-16,"Chemist Warehouse",-57.97,Fun
+2026-06-17,"Elk Espresso",-5.50,EatingOut
+2026-06-18,"Salary – Studio Nine Design",2120.00,Income
+2026-06-18,"Transfer to Car Fund",-150.00,Savings
+2026-06-18,"Aussie Broadband",-79.00,Bills
+2026-06-18,"Elk Espresso",-5.50,EatingOut
+2026-06-19,"Elk Espresso",-5.50,EatingOut
+2026-06-19,"Uber Eats",-36.38,EatingOut
+2026-06-19,"Translink go card",-20.00,Transport
+2026-06-20,"Coles West Burleigh",-81.41,Groceries
+2026-06-20,"DoorDash",-31.58,EatingOut
+2026-06-20,"Burleigh Brewing Co",-59.43,Fun
+2026-06-20,"Chemist Warehouse",-29.37,Fun
+2026-06-22,"Elk Espresso",-5.50,EatingOut
+2026-06-22,"Boost Juice",-17.61,EatingOut
+2026-06-22,"Ampol Burleigh Heads",-77.96,Transport
+2026-06-23,"iCloud+ 2TB",-14.99,Subscriptions
+2026-06-23,"Zambrero",-19.72,EatingOut
+2026-06-24,"Elk Espresso",-5.50,EatingOut
+2026-06-24,"JB Hi-Fi",-51.02,Shopping
+2026-06-25,"Origin Energy",-92.00,Bills
+2026-06-25,"Elk Espresso",-5.50,EatingOut
+2026-06-25,"Zambrero",-14.89,EatingOut
+2026-06-26,"Boost Juice",-14.49,EatingOut
+2026-06-26,"Uber Eats",-40.00,EatingOut
+2026-06-27,"Westpac Car Insurance",-89.00,Bills
+2026-06-27,"Woolworths Burleigh",-99.83,Groceries
+2026-06-27,"DoorDash",-34.85,EatingOut
+2026-06-29,"Elk Espresso",-9.50,EatingOut
+2026-06-30,"Elk Espresso",-9.50,EatingOut
+2026-07-01,"Rent – Surfers Paradise",-1560.00,Rent
+2026-07-01,"ALDI Varsity Lakes",-34.52,Groceries
+2026-07-01,"Elk Espresso",-9.50,EatingOut
+2026-07-01,"Ampol Burleigh Heads",-75.78,Transport
+2026-07-01,"Bunnings",-74.33,Shopping
+2026-07-02,"Salary – Studio Nine Design",2120.00,Income
+2026-07-02,"Transfer to Car Fund",-150.00,Savings
+2026-07-02,"FitFlex Gym",-64.00,Subscriptions
+2026-07-02,"Elk Espresso",-5.50,EatingOut
+2026-07-02,"Sushi Hub",-15.31,EatingOut
+2026-07-02,"Cotton On",-58.31,Shopping
+2026-07-03,"Elk Espresso",-5.50,EatingOut
+2026-07-03,"Uber Eats",-45.86,EatingOut
+2026-07-04,"Netflix",-18.99,Subscriptions
+2026-07-04,"ALDI Varsity Lakes",-106.00,Groceries
+2026-07-04,"Uber Eats",-37.25,EatingOut
+2026-07-04,"Translink go card",-20.00,Transport
+2026-07-04,"Kmart Robina",-51.06,Shopping
+2026-07-06,"Medibank Health Cover",-148.00,Bills
+2026-07-06,"Elk Espresso",-9.50,EatingOut
+2026-07-06,"Sushi Hub",-13.80,EatingOut
+2026-07-07,"Spotify Premium",-13.99,Subscriptions
+2026-07-07,"Uber Eats",-35.50,EatingOut
+2026-07-08,"ALDI Varsity Lakes",-32.70,Groceries
+2026-07-08,"Elk Espresso",-5.50,EatingOut
+2026-07-09,"Apple Music",-12.99,Subscriptions
+2026-07-09,"Elk Espresso",-5.50,EatingOut
+2026-07-10,"Afterpay instalment",-45.00,Shopping
+2026-07-10,"Elk Espresso",-5.50,EatingOut
+2026-07-10,"Uber Eats",-36.28,EatingOut
+2026-07-10,"Ampol Burleigh Heads",-68.32,Transport
+2026-07-11,"ALDI Varsity Lakes",-94.79,Groceries
+2026-07-11,"DoorDash",-45.24,EatingOut
+2026-07-11,"Priceline Pharmacy",-36.62,Fun
+2026-07-12,"Disney+",-15.99,Subscriptions
+2026-07-13,"Elk Espresso",-5.50,EatingOut
+2026-07-13,"Sushi Hub",-13.88,EatingOut
+2026-07-14,"Peloton App",-19.99,Subscriptions
+2026-07-15,"Personal loan repayment",-166.00,Loan
+2026-07-15,"ALDI Varsity Lakes",-37.63,Groceries
+2026-07-15,"Elk Espresso",-5.50,EatingOut
+2026-07-16,"Salary – Studio Nine Design",2120.00,Income
+2026-07-16,"Optus Mobile",-49.00,Bills
+2026-07-16,"Elk Espresso",-9.50,EatingOut
+2026-07-16,"Guzman y Gomez",-18.33,EatingOut
+2026-07-16,"Bunnings",-55.67,Shopping
+2026-07-17,"Elk Espresso",-5.50,EatingOut
+2026-07-17,"Sushi Hub",-17.53,EatingOut
+2026-07-17,"Cotton On",-75.26,Shopping
+2026-07-18,"Aussie Broadband",-79.00,Bills
+2026-07-18,"Woolworths Burleigh",-80.82,Groceries
+2026-07-18,"Uber Eats",-38.70,EatingOut
+2026-07-19,"Ampol Burleigh Heads",-75.47,Transport
+2026-07-20,"Elk Espresso",-5.50,EatingOut
+2026-07-21,"Elk Espresso",-5.50,EatingOut
+2026-07-22,"Woolworths Burleigh",-37.12,Groceries
+2026-07-22,"Elk Espresso",-5.50,EatingOut
+2026-07-23,"iCloud+ 2TB",-14.99,Subscriptions
+2026-07-23,"Elk Espresso",-9.50,EatingOut
+2026-07-24,"Sushi Hub",-14.43,EatingOut
+2026-07-25,"Origin Energy",-92.00,Bills
+2026-07-25,"ALDI Varsity Lakes",-105.38,Groceries
+2026-07-27,"Westpac Car Insurance",-89.00,Bills
+2026-07-27,"Elk Espresso",-9.50,EatingOut
+2026-07-28,"Elk Espresso",-5.50,EatingOut
+2026-07-28,"Boost Juice",-16.62,EatingOut
+2026-07-28,"Ampol Burleigh Heads",-76.16,Transport
+2026-07-29,"Coles West Burleigh",-26.67,Groceries
+2026-07-29,"Elk Espresso",-5.50,EatingOut
+2026-07-30,"Salary – Studio Nine Design",2120.00,Income
+2026-07-30,"Transfer to Car Fund",-150.00,Savings
+2026-07-30,"Elk Espresso",-9.50,EatingOut
+2026-07-30,"Boost Juice",-13.28,EatingOut
+2026-07-31,"Elk Espresso",-5.50,EatingOut
+2026-07-31,"Uber Eats",-40.46,EatingOut
+2026-07-31,"Kmart Robina",-103.71,Shopping
+2026-08-01,"Rent – Surfers Paradise",-1560.00,Rent
+2026-08-01,"Woolworths Burleigh",-95.53,Groceries
+2026-08-01,"Uber Eats",-32.21,EatingOut
+2026-08-01,"JB Hi-Fi",-103.23,Shopping
+2026-08-02,"FitFlex Gym",-64.00,Subscriptions
+2026-08-04,"Netflix",-18.99,Subscriptions
+2026-08-04,"Elk Espresso",-9.50,EatingOut
+2026-08-04,"Guzman y Gomez",-18.10,EatingOut
+2026-08-05,"Elk Espresso",-5.50,EatingOut
+2026-08-06,"Medibank Health Cover",-148.00,Bills
+2026-08-06,"Elk Espresso",-5.50,EatingOut
+2026-08-06,"Ampol Burleigh Heads",-66.90,Transport
+2026-08-07,"Spotify Premium",-13.99,Subscriptions
+2026-08-07,"Elk Espresso",-5.50,EatingOut
+2026-08-07,"DoorDash",-42.26,EatingOut
+2026-08-08,"Woolworths Burleigh",-96.64,Groceries
+2026-08-08,"Uber Eats",-35.39,EatingOut
+2026-08-09,"Apple Music",-12.99,Subscriptions
+2026-08-10,"Afterpay instalment",-45.00,Shopping
+2026-08-10,"Elk Espresso",-5.50,EatingOut
+2026-08-11,"Elk Espresso",-5.50,EatingOut
+2026-08-12,"Disney+",-15.99,Subscriptions
+2026-08-12,"Coles West Burleigh",-24.96,Groceries
+2026-08-12,"Elk Espresso",-5.50,EatingOut
+2026-08-13,"Salary – Studio Nine Design",2120.00,Income
+2026-08-13,"Transfer to Car Fund",-150.00,Savings
+2026-08-13,"Elk Espresso",-9.50,EatingOut
+2026-08-13,"Bunnings",-39.48,Shopping
+2026-08-14,"Peloton App",-19.99,Subscriptions
+2026-08-14,"Elk Espresso",-5.50,EatingOut
+2026-08-14,"Uber Eats",-43.34,EatingOut
+2026-08-14,"JB Hi-Fi",-33.22,Shopping
+2026-08-15,"Personal loan repayment",-166.00,Loan
+2026-08-15,"ALDI Varsity Lakes",-106.08,Groceries
+2026-08-15,"Uber Eats",-34.65,EatingOut
+2026-08-15,"Ampol Burleigh Heads",-72.89,Transport
+2026-08-15,"Burleigh Brewing Co",-47.53,Fun
+2026-08-16,"Optus Mobile",-49.00,Bills
+2026-08-17,"Elk Espresso",-5.50,EatingOut
+2026-08-18,"Aussie Broadband",-79.00,Bills
+2026-08-18,"Elk Espresso",-9.50,EatingOut
+2026-08-18,"Boost Juice",-14.03,EatingOut
+2026-08-19,"Elk Espresso",-5.50,EatingOut
+2026-08-20,"Zenlist Pro",-12.99,Subscriptions
+2026-08-20,"Elk Espresso",-5.50,EatingOut
+2026-08-21,"Elk Espresso",-5.50,EatingOut
+2026-08-21,"Uber Eats",-33.40,EatingOut
+2026-08-22,"ALDI Varsity Lakes",-89.76,Groceries
+2026-08-22,"Uber Eats",-35.19,EatingOut
+2026-08-23,"iCloud+ 2TB",-14.99,Subscriptions
+2026-08-24,"Elk Espresso",-9.50,EatingOut
+2026-08-24,"Ampol Burleigh Heads",-72.09,Transport
+2026-08-25,"Origin Energy",-92.00,Bills
+2026-08-25,"Elk Espresso",-5.50,EatingOut
+2026-08-26,"Coles West Burleigh",-26.34,Groceries
+2026-08-27,"Salary – Studio Nine Design",2120.00,Income
+2026-08-27,"Westpac Car Insurance",-89.00,Bills
+2026-08-27,"Elk Espresso",-5.50,EatingOut
+2026-08-27,"Bunnings",-76.76,Shopping
+2026-08-28,"Elk Espresso",-9.50,EatingOut
+2026-08-28,"JB Hi-Fi",-82.89,Shopping
+2026-08-29,"ALDI Varsity Lakes",-69.60,Groceries
+2026-08-29,"Uber Eats",-37.11,EatingOut
+2026-08-31,"Elk Espresso",-5.50,EatingOut
+2026-09-01,"Rent – Surfers Paradise",-1560.00,Rent
+2026-09-01,"Elk Espresso",-5.50,EatingOut
+2026-09-01,"Boost Juice",-18.14,EatingOut
+2026-09-01,"Uber Eats",-36.61,EatingOut
+2026-09-02,"FitFlex Gym",-64.00,Subscriptions
+2026-09-02,"Elk Espresso",-5.50,EatingOut
+2026-09-03,"Elk Espresso",-5.50,EatingOut
+2026-09-03,"Ampol Burleigh Heads",-74.21,Transport
+2026-09-03,"Translink go card",-20.00,Transport
+2026-09-04,"Netflix",-18.99,Subscriptions
+2026-09-04,"Zambrero",-17.07,EatingOut
+2026-09-05,"Woolworths Burleigh",-99.04,Groceries
+2026-09-05,"Uber Eats",-31.45,EatingOut
+2026-09-05,"Dan Murphy's",-65.91,Fun
+2026-09-06,"Medibank Health Cover",-148.00,Bills
+2026-09-07,"Spotify Premium",-13.99,Subscriptions
+2026-09-07,"Elk Espresso",-9.50,EatingOut
+2026-09-08,"Elk Espresso",-9.50,EatingOut
+2026-09-08,"Uber Eats",-30.58,EatingOut
+2026-09-09,"Apple Music",-12.99,Subscriptions
+2026-09-09,"Elk Espresso",-9.50,EatingOut
+2026-09-09,"Boost Juice",-15.02,EatingOut
+2026-09-10,"Salary – Studio Nine Design",2120.00,Income
+2026-09-10,"Transfer to Car Fund",-150.00,Savings
+2026-09-10,"Afterpay instalment",-45.00,Shopping
+2026-09-10,"Elk Espresso",-5.50,EatingOut
+2026-09-11,"Elk Espresso",-5.50,EatingOut
+2026-09-11,"Uber Eats",-37.00,EatingOut
+2026-09-12,"Disney+",-15.99,Subscriptions
+2026-09-12,"Coles West Burleigh",-104.65,Groceries
+2026-09-12,"Event Cinemas Pacific Fair",-72.22,Fun
+2026-09-14,"Peloton App",-19.99,Subscriptions
+2026-09-14,"Elk Espresso",-5.50,EatingOut
+2026-09-14,"Zambrero",-13.63,EatingOut
+2026-09-14,"Priceline Pharmacy",-27.62,Fun
+2026-09-15,"Personal loan repayment",-166.00,Loan
+2026-09-15,"Uber Eats",-36.93,EatingOut
+2026-09-16,"Optus Mobile",-49.00,Bills
+2026-09-16,"Elk Espresso",-5.50,EatingOut
+2026-09-17,"Elk Espresso",-9.50,EatingOut
+2026-09-17,"Ampol Burleigh Heads",-68.60,Transport
+2026-09-18,"Aussie Broadband",-79.00,Bills
+2026-09-18,"Elk Espresso",-5.50,EatingOut
+2026-09-19,"Coles West Burleigh",-80.11,Groceries
+2026-09-19,"Uber Eats",-32.18,EatingOut
+2026-09-20,"Zenlist Pro",-12.99,Subscriptions
+2026-09-21,"Elk Espresso",-5.50,EatingOut
+2026-09-22,"Elk Espresso",-5.50,EatingOut
+2026-09-23,"iCloud+ 2TB",-14.99,Subscriptions
+2026-09-23,"ALDI Varsity Lakes",-31.27,Groceries
+2026-09-23,"Elk Espresso",-5.50,EatingOut
+2026-09-24,"Salary – Studio Nine Design",2120.00,Income
+2026-09-24,"Elk Espresso",-5.50,EatingOut
+2026-09-24,"Zambrero",-18.74,EatingOut
+2026-09-25,"Origin Energy",-92.00,Bills
+2026-09-25,"Uber Eats",-40.95,EatingOut
+2026-09-26,"Woolworths Burleigh",-71.50,Groceries
+2026-09-26,"Uber Eats",-40.23,EatingOut
+2026-09-26,"Ampol Burleigh Heads",-64.05,Transport
+2026-09-26,"Dan Murphy's",-55.84,Fun
+2026-09-27,"Westpac Car Insurance",-89.00,Bills
+2026-09-29,"Elk Espresso",-9.50,EatingOut
+2026-09-30,"Woolworths Burleigh",-26.91,Groceries
+2026-09-30,"Elk Espresso",-9.50,EatingOut
+2026-09-30,"Zambrero",-16.70,EatingOut
+2026-10-01,"Rent – Surfers Paradise",-1560.00,Rent
+2026-10-01,"Elk Espresso",-9.50,EatingOut
+2026-10-01,"Zambrero",-13.03,EatingOut
+2026-10-02,"FitFlex Gym",-64.00,Subscriptions
+2026-10-02,"DoorDash",-32.93,EatingOut
+2026-10-03,"Coles West Burleigh",-77.05,Groceries
+2026-10-03,"Uber Eats",-35.39,EatingOut
+2026-10-04,"Netflix",-18.99,Subscriptions
+2026-10-05,"Ampol Burleigh Heads",-75.21,Transport
+2026-10-06,"Medibank Health Cover",-148.00,Bills
+2026-10-06,"Elk Espresso",-5.50,EatingOut
+2026-10-07,"Spotify Premium",-13.99,Subscriptions
+2026-10-07,"Woolworths Burleigh",-34.31,Groceries
+2026-10-07,"Elk Espresso",-5.50,EatingOut
+2026-10-08,"Salary – Studio Nine Design",2120.00,Income
+2026-10-08,"Transfer to Car Fund",-150.00,Savings
+2026-10-08,"Elk Espresso",-5.50,EatingOut
+2026-10-08,"JB Hi-Fi",-120.95,Shopping
+2026-10-09,"Apple Music",-12.99,Subscriptions
+2026-10-09,"Elk Espresso",-5.50,EatingOut
+2026-10-09,"DoorDash",-33.03,EatingOut
+2026-10-10,"Afterpay instalment",-45.00,Shopping
+2026-10-10,"Woolworths Burleigh",-92.03,Groceries
+2026-10-10,"DoorDash",-45.34,EatingOut
+2026-10-10,"Translink go card",-20.00,Transport
+2026-10-12,"Disney+",-15.99,Subscriptions
+2026-10-12,"Elk Espresso",-5.50,EatingOut
+2026-10-13,"Elk Espresso",-5.50,EatingOut
+2026-10-14,"Peloton App",-19.99,Subscriptions
+2026-10-14,"Elk Espresso",-5.50,EatingOut
+2026-10-15,"Personal loan repayment",-166.00,Loan
+2026-10-15,"Elk Espresso",-5.50,EatingOut
+2026-10-15,"Ampol Burleigh Heads",-78.15,Transport
+2026-10-16,"Optus Mobile",-49.00,Bills
+2026-10-16,"Elk Espresso",-5.50,EatingOut
+2026-10-16,"Uber Eats",-39.53,EatingOut
+2026-10-17,"Coles West Burleigh",-106.03,Groceries
+2026-10-17,"DoorDash",-34.81,EatingOut
+2026-10-18,"Aussie Broadband",-79.00,Bills
+2026-10-19,"Elk Espresso",-9.50,EatingOut
+2026-10-20,"Zenlist Pro",-12.99,Subscriptions
+2026-10-20,"Elk Espresso",-5.50,EatingOut
+2026-10-20,"Boost Juice",-18.22,EatingOut
+2026-10-21,"Guzman y Gomez",-14.62,EatingOut
+2026-10-22,"Salary – Studio Nine Design",2120.00,Income
+2026-10-22,"Transfer to Car Fund",-150.00,Savings
+2026-10-22,"Elk Espresso",-5.50,EatingOut
+2026-10-22,"Boost Juice",-15.29,EatingOut
+2026-10-23,"iCloud+ 2TB",-14.99,Subscriptions
+2026-10-23,"Sushi Hub",-13.70,EatingOut
+2026-10-23,"Uber Eats",-31.36,EatingOut
+2026-10-24,"Woolworths Burleigh",-75.44,Groceries
+2026-10-24,"Uber Eats",-33.61,EatingOut
+2026-10-25,"Origin Energy",-92.00,Bills
+2026-10-25,"Ampol Burleigh Heads",-74.35,Transport
+2026-10-26,"Elk Espresso",-5.50,EatingOut
+2026-10-27,"Westpac Car Insurance",-89.00,Bills
+2026-10-27,"Elk Espresso",-9.50,EatingOut
+2026-10-27,"Kmart Robina",-38.17,Shopping
+2026-10-28,"Woolworths Burleigh",-35.32,Groceries
+2026-10-28,"Elk Espresso",-5.50,EatingOut
+2026-10-29,"Elk Espresso",-5.50,EatingOut
+2026-10-30,"Elk Espresso",-5.50,EatingOut
+2026-10-30,"Uber Eats",-38.08,EatingOut
+2026-10-31,"Coles West Burleigh",-90.28,Groceries
+2026-10-31,"DoorDash",-35.22,EatingOut
+2026-10-31,"Chemist Warehouse",-40.93,Fun
+2026-11-01,"Rent – Surfers Paradise",-1560.00,Rent
+2026-11-02,"FitFlex Gym",-64.00,Subscriptions
+2026-11-02,"Elk Espresso",-5.50,EatingOut
+2026-11-03,"Uber Eats",-28.66,EatingOut
+2026-11-03,"Ampol Burleigh Heads",-74.17,Transport
+2026-11-03,"Chemist Warehouse",-44.68,Fun
+2026-11-04,"Netflix",-18.99,Subscriptions
+2026-11-04,"Coles West Burleigh",-26.92,Groceries
+2026-11-04,"Elk Espresso",-5.50,EatingOut
+2026-11-04,"Sushi Hub",-16.27,EatingOut
+2026-11-05,"Salary – Studio Nine Design",2120.00,Income
+2026-11-05,"Transfer to Car Fund",-150.00,Savings
+2026-11-05,"Elk Espresso",-5.50,EatingOut
+2026-11-05,"Amazon AU",-62.21,Shopping
+2026-11-06,"Medibank Health Cover",-148.00,Bills
+2026-11-06,"Elk Espresso",-5.50,EatingOut
+2026-11-07,"Spotify Premium",-13.99,Subscriptions
+2026-11-07,"Woolworths Burleigh",-100.15,Groceries
+2026-11-07,"DoorDash",-40.04,EatingOut
+2026-11-07,"Amazon AU",-62.66,Shopping
+2026-11-08,"JB Hi-Fi",-56.48,Shopping
+2026-11-09,"Apple Music",-12.99,Subscriptions
+2026-11-09,"Elk Espresso",-9.50,EatingOut
+2026-11-10,"Afterpay instalment",-45.00,Shopping
+2026-11-10,"Elk Espresso",-5.50,EatingOut
+2026-11-11,"Coles West Burleigh",-24.28,Groceries
+2026-11-11,"Elk Espresso",-5.50,EatingOut
+2026-11-12,"Disney+",-15.99,Subscriptions
+2026-11-12,"Elk Espresso",-5.50,EatingOut
+2026-11-12,"Zambrero",-18.70,EatingOut
+2026-11-12,"Ampol Burleigh Heads",-80.24,Transport
+2026-11-13,"Elk Espresso",-5.50,EatingOut
+2026-11-13,"Boost Juice",-18.68,EatingOut
+2026-11-13,"Uber Eats",-35.12,EatingOut
+2026-11-14,"Peloton App",-19.99,Subscriptions
+2026-11-14,"Woolworths Burleigh",-73.50,Groceries
+2026-11-14,"DoorDash",-32.93,EatingOut
+2026-11-14,"Event Cinemas Pacific Fair",-61.18,Fun
+2026-11-15,"Personal loan repayment",-166.00,Loan
+2026-11-16,"Optus Mobile",-49.00,Bills
+2026-11-16,"Elk Espresso",-9.50,EatingOut

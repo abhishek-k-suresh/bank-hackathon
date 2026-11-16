@@ -1,0 +1,13 @@
+{
+  "name": "future-me-live-ai",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Optional live chat server for the Future Me hackathon prototype. Keeps the API key off the browser.",
+  "scripts": {
+    "start": "node server.mjs"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.80.0"
+  }
+}
