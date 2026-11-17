@@ -9,6 +9,10 @@ const ui = {
   assumptions: { ...ASSUMPTIONS },       // editable in "Show calculation"
   windowShow: defaultShow(), gearOpen: false, moodOpen: false, moodLive: null,
   calcOpen: false, form: null, policies: [],
+  avatarSet: "m", // "m" | "f": which avatar set the window shows
+  customGoals: [],                  // ids of goals created in the main panel (removed on reset)
+  bgOpen: false,                    // background picker on the window page
+  quests: { delivery: 0, coffee: 0 }, // check-ins for the quests that are logged by hand
 };
 function defaultActions() {
   return {
@@ -125,6 +129,7 @@ function homeView() {
     <section class="card letter">
       <div class="card-head"><b>📨 A letter from future you</b><small>Weekly</small></div>
       <p>${esc(letter())}</p>
+      <div class="row-actions"><button class="btn small primary" data-action="open-quests">See your quests · ${quests().filter(q => q.have >= q.need).length} of ${quests().length} done</button></div>
     </section>`}
     <p class="fine">Opt-in. General information, not financial advice. Nudges never block a payment.</p>`;
 }
@@ -141,7 +146,43 @@ function futureSummary() {
 function letter() {
   const { plan } = S;
   const d = plan.withPlan.date || addMonths(APP.today, 24);
-  return `Hi ${CUSTOMER.first}, it's you in ${monthYear(d)}. The ${plan.goal.name} is in the garage and I still get Elk coffee on Mondays. The thing that made the difference wasn't a big sacrifice, it was moving the transfer to payday morning so the money was gone before the weekend. Keep Friday Uber Eats. Skip Saturday's. — Future You`;
+  return `Hi ${CUSTOMER.first}, it's you in ${monthYear(d)}. The ${plan.goal.name} is in the garage and I still get Elk coffee on Mondays. The thing that made the difference wasn't a big sacrifice, it was moving the transfer to payday morning so the money was gone before the weekend. Keep Friday Uber Eats. Skip Saturday's. I've left you a few small quests to get you started. — Future You`;
+}
+
+/* ---------- quests from the letter: small habits, tracked in the main panel ---------- */
+function quests() {
+  const hero = S.pots.goals[0];
+  const moved = actions.sentToFuture + Object.values(actions.added).reduce((a, b) => a + b, 0);
+  return [
+    { id: "payday", icon: "📅", title: "Move your saving to payday morning", why: "Money that leaves before the weekend doesn't get spent.", have: hero.auto ? 1 : 0, need: 1, unit: "auto-save set up", cta: hero.auto ? null : `<button class="btn small" data-action="form-open" data-kind="auto" data-id="${hero.id}">Set up auto-save</button>` },
+    { id: "subs", icon: "🔁", title: "Cancel one subscription you don't use", why: "Two of yours overlap. Dropping one is money back every month.", have: Math.min(1, actions.cancelled.size), need: 1, unit: "cancelled", cta: actions.cancelled.size ? null : `<button class="btn small" data-action="tab" data-tab="insights">Find it in Insights</button>` },
+    { id: "delivery", icon: "🛵", title: "Skip Saturday delivery for 4 weekends", why: "Keep Friday. Cook Saturday. About $40 saved each time.", have: ui.quests.delivery, need: 4, unit: "weekends", log: "I skipped it this week" },
+    { id: "coffee", icon: "☕", title: "Make coffee at home 3 days this week", why: "Still Elk on Monday and Friday.", have: ui.quests.coffee, need: 3, unit: "days", log: "Made one at home" },
+    { id: "topup", icon: "💸", title: "Move $50 of spare cash into any goal", why: "Small top-ups add up, and they pull the date closer.", have: Math.min(50, moved), need: 50, unit: "moved", money: true },
+  ];
+}
+function questsCard() {
+  const qs = quests(), done = qs.filter(q => q.have >= q.need).length;
+  return `
+    <h3 class="h3" id="quests">Quests from future you</h3>
+    <section class="card">
+      <div class="card-head"><b>📨 From your letter</b><small>${done} of ${qs.length} done</small></div>
+      ${qs.map(q => {
+        const fin = q.have >= q.need;
+        const count = q.money ? `${money(q.have)} of ${money(q.need)} ${q.unit}` : `${q.have} of ${q.need} ${q.unit}`;
+        return `
+        <div class="quest ${fin ? "done" : ""}">
+          <span class="ico">${q.icon}</span>
+          <div>
+            <b>${esc(q.title)}</b>
+            <small>${esc(q.why)}</small>
+            ${progressBar(q.have / q.need, fin ? "#1a9c6b" : "#8e2de2")}
+            <div class="split"><span>${count}</span>${fin ? `<span class="pill">Done</span>` : q.log ? `<button class="btn small" data-action="quest-log" data-id="${q.id}">＋ ${q.log}</button>` : q.cta || `<span class="fine">Tracked automatically</span>`}</div>
+          </div>
+        </div>`;
+      }).join("")}
+      <small class="fine">Quests are optional. Some tick themselves off from your account activity; others you log yourself.</small>
+    </section>`;
 }
 
 function runwayCard() {
@@ -176,15 +217,16 @@ function windowPanel() {
     </section>`;
 }
 
-const windowScene = () => sceneSvg(FV, { show: ui.windowShow, calm: S.calm, uid: "w" });
+const windowScene = () => sceneSvg(FV, { show: ui.windowShow, calm: S.calm, uid: "w", insured: INSURANCES.concat(ui.policies).length > 0, quests: quests().filter(q => q.have < q.need).length });
 
 function gearMenu() {
   const show = ui.windowShow;
-  const items = [["avatar", "Avatar"], ["hero", "Hero goal scene"], ["others", "Other goals"], ["shield", "Emergency fund shield"], ["vault", "Vault"], ["loan", "Loan weight"]];
+  const items = [["avatar", "Avatar"], ["hero", "Hero goal scene"], ["others", "Other goals"], ["shield", "Protection shields"], ["vault", "Vault"], ["loan", "Loan"]];
   return `
     <div class="gear-menu">
       <div class="card-head"><b>Customise what's shown</b><button class="btn small ${show.auto ? "done" : ""}" data-action="win-auto">${show.auto ? "✓ Automatic" : "Automatic"}</button></div>
       <div class="toggles">${items.map(([k, label]) => `<label class="toggle"><input type="checkbox" data-action="win-toggle" data-id="${k}" ${show[k] ? "checked" : ""}> ${label}</label>`).join("")}</div>
+      <div class="card-head" style="margin-top:8px"><b>Avatar</b><span class="avset">${[["m", "Male"], ["f", "Female"]].map(([k, label]) => `<button class="btn small ${ui.avatarSet === k ? "done" : ""}" data-action="win-avatar" data-id="${k}">${label}</button>`).join("")}</span></div>
     </div>`;
 }
 
@@ -240,6 +282,7 @@ function futureControls() {
 // Re-draw only the parts that depend on the slider, so the slider itself stays put while it is dragged.
 const fvParts = {
   scene: windowScene,
+  "scene-main": () => sceneSvg(FV, { show: ui.windowShow, calm: S.calm, uid: "m", insured: INSURANCES.concat(ui.policies).length > 0, quests: quests().filter(q => q.have < q.need).length }),
   note: moodNote,
   "main-top": () => mainTop(),
   "main-body": () => mainBody(),
@@ -262,11 +305,38 @@ function mainView() {
     <button class="back" data-action="tab" data-tab="home">‹ Home</button>
     <section class="greet"><h2>Your whole picture</h2><p class="fv-when">${esc(FV.when)}</p></section>
     <section class="card mainhead">
+      <div class="card-head"><b>Your window</b><button class="gear" data-action="bg-edit" aria-label="Change window background" title="Change window background" aria-expanded="${ui.bgOpen}">✎</button></div>
+      ${ui.bgOpen ? bgPicker() : ""}
+      <div class="scene-wrap mini" data-fv="scene-main">${sceneSvg(FV, { show: ui.windowShow, calm: S.calm, uid: "m", insured: INSURANCES.concat(ui.policies).length > 0, quests: quests().filter(q => q.have < q.need).length })}</div>
       <div data-fv="main-top">${mainTop()}</div>
       ${futureControls()}
     </section>
     <div data-fv="main-body">${mainBody()}</div>
     <p class="fine">Projections are estimates from your last three months and the assumptions in Show calculation. General information, not financial advice.</p>`;
+}
+
+/* ---------- window background: random on the first visit, then remembered until the customer changes it ---------- */
+const BG_KEY = "futureme.windowBackground";
+function loadBackground() {
+  let id = null;
+  try { id = localStorage.getItem(BG_KEY); } catch (e) { /* storage blocked: pick again each visit */ }
+  if (!BACKGROUNDS.some(b => b[0] === id)) {
+    id = BACKGROUNDS[Math.floor(Math.random() * BACKGROUNDS.length)][0];
+    try { localStorage.setItem(BG_KEY, id); } catch (e) { /* ignore */ }
+  }
+  SCENE_BG = id;
+}
+function setBackground(id) {
+  if (!BACKGROUNDS.some(b => b[0] === id)) return;
+  SCENE_BG = id;
+  try { localStorage.setItem(BG_KEY, id); } catch (e) { /* ignore */ }
+}
+function bgPicker() {
+  return `
+    <div class="gear-menu">
+      <div class="card-head"><b>Window background</b><small>Stays until you change it</small></div>
+      <div class="bg-pick">${BACKGROUNDS.map(([id, label]) => `<button type="button" class="${SCENE_BG === id ? "on" : ""}" data-action="bg-set" data-id="${id}" aria-pressed="${SCENE_BG === id}"><img src="img/bg-${id}.png" alt=""><span>${label}</span></button>`).join("")}</div>
+    </div>`;
 }
 
 function mainTop() {
@@ -315,8 +385,8 @@ function mainBody() {
     const planTxt = hero && ui.future.track === "plan" && S.plan.withPlan.monthly > S.plan.current.monthly + 1 ? ` · plan adds ${money(S.plan.withPlan.monthly - S.plan.current.monthly)} a month` : "";
     const f = ui.form && ui.form.id === g.id ? ui.form : null;
     return `
-      <section class="card goalcard ${g.done ? "done" : ""}">
-        <div class="ins-head"><span class="ico">${g.emoji}</span><div><b>${esc(g.name)}</b><small>${esc(pot.desc || "")}</small></div>${g.done ? `<span class="pill">Completed</span>` : hero ? `<span class="pill hero">Hero goal</span>` : ""}</div>
+      <section class="card goalcard ${g.done ? "done" : ""}" id="goal-${esc(g.id)}">
+        <div class="ins-head"><span class="ico ${g.done ? "" : "grey"}">${pot.type === "other" ? `<img src="img/coin-${coinKey(pot)}.png" alt="">` : g.emoji}</span><div><b>${esc(g.name)}</b><small>${esc(pot.desc || "")}</small></div>${g.done ? `<span class="pill">Completed</span>` : hero ? `<span class="pill hero">Hero goal</span>` : ""}</div>
         ${progressBar(g.pct, g.done ? "#1a9c6b" : "#2a78d6")}
         <div class="split"><span><b>${money(g.saved)}</b> of ${money(g.target)}</span><span>${pct(g.pct)}</span></div>
         <div class="split"><span>Wanted by ${monthYear(g.due)}</span>${onTrack}</div>
@@ -370,7 +440,13 @@ function mainBody() {
       <small class="fine">Add policies you hold outside Westpac so every renewal is in one place.</small>
     </section>`;
 
-  return `${bank}<h3 class="h3">Goals</h3>${goals}<h3 class="h3">Loan repayments</h3>${loans}<h3 class="h3">Protection</h3>${protection}`;
+  const nf = ui.form && ui.form.kind === "goal" ? ui.form : null;
+  const newGoal = `
+    <section class="card">
+      <div class="row-actions"><button class="btn small ${nf ? "primary" : ""}" data-action="form-open" data-kind="goal" data-id="newgoal">＋ New goal</button></div>
+      ${nf ? newGoalForm(nf) : `<small class="fine">Pick a picture or an icon. It appears in your window in grey and fills with colour as you save.</small>`}
+    </section>`;
+  return `${bank}${S.calm ? "" : questsCard()}<h3 class="h3">Goals</h3>${goals}${newGoal}<h3 class="h3" id="loans">Loan repayments</h3>${loans}<h3 class="h3">Protection</h3>${protection}`;
 }
 
 function goalForm(f, pot) {
@@ -393,6 +469,23 @@ function goalForm(f, pot) {
     </div>`;
 }
 
+// picture goals get their own illustration in the window (img/goal-<id>.png) instead of a coin
+const GOAL_PICTURES = [["house", "House", "🏠"], ["car", "Car", "🚗"], ["bike", "Bike", "🚲"]];
+const GOAL_ICONS = [["electronics", "Electronics", "💻"], ["entertainment", "Entertainment", "🎟️"], ["travel", "Travel", "✈️"], ["education", "Education", "🎓"], ["gift", "Gift", "🎁"], ["tech", "Phone and tech", "📱"], ["home", "Home", "🏠"], ["health", "Health", "🩺"], ["wedding", "Wedding", "💍"], ["baby", "Baby", "🍼"], ["pet", "Pet", "🐾"], ["generic", "Something else", "⭐"]];
+function newGoalForm(f) {
+  return `
+    <div class="inline-form">
+      <label>Icon</label>
+      <div class="pic-pick">${GOAL_PICTURES.map(([id, label]) => `<button type="button" class="${f.cat === id ? "on" : ""}" data-action="form-icon" data-id="${id}" aria-pressed="${f.cat === id}"><img src="img/goal-${id}.png" alt=""><span>${label}</span></button>`).join("")}</div>
+      <div class="icon-pick">${GOAL_ICONS.map(([id, label]) => `<button type="button" class="${f.cat === id ? "on" : ""}" data-action="form-icon" data-id="${id}" title="${label}" aria-label="${label}" aria-pressed="${f.cat === id}"><img src="img/coin-${id}.png" alt=""></button>`).join("")}</div>
+      <label>Name <input type="text" data-form="name" value="${esc(f.name)}" placeholder="e.g. New camera" aria-label="Goal name"></label>
+      <label>Target <span class="money-in">$<input type="number" min="50" step="50" value="${esc(f.target)}" data-form="target" aria-label="Target amount"></span></label>
+      <label>Wanted by <input type="date" data-form="due" value="${esc(f.due)}" aria-label="Wanted by date"></label>
+      <label>Auto-save each payday <span class="money-in">$<input type="number" min="0" step="5" value="${esc(f.auto)}" data-form="auto" aria-label="Auto-save each payday, optional"></span></label>
+      <small class="fine">Auto-save is optional. Leave it at 0 and add money by hand whenever you like.</small>
+      <div class="row-actions"><button class="btn primary small" data-action="form-save">Create goal</button><button class="btn ghost small" data-action="form-cancel">Cancel</button></div>
+    </div>`;
+}
 function policyForm(f) {
   return `
     <div class="inline-form">
@@ -774,7 +867,7 @@ function goToHardship() {
 function handle(action, el) {
   if (action !== "scene") clearSceneTimers(); // any manual action stops the scene 5 animation
   switch (action) {
-    case "tab": ui.tab = el.dataset.tab; ui.form = null; ui.gearOpen = false; render(); break;
+    case "tab": ui.tab = el.dataset.tab; ui.form = null; ui.gearOpen = false; ui.bgOpen = false; render(); break;
     case "why": { const id = el.dataset.id; ui.expanded.has(id) ? ui.expanded.delete(id) : ui.expanded.add(id); render(); break; }
     case "cancel": {
       const name = el.dataset.id; const r = RECURRING.find(x => x.name === name);
@@ -830,6 +923,7 @@ function handle(action, el) {
     case "win-gear": ui.gearOpen = !ui.gearOpen; render(); break;
     case "win-toggle": ui.windowShow[el.dataset.id] = el.checked; ui.windowShow.auto = false; render(); break;
     case "win-auto": ui.windowShow = defaultShow(); render(); break;
+    case "win-avatar": ui.avatarSet = AVATAR_SET = el.dataset.id; render(); break;
     case "future-years": ui.future.years = clamp(Math.round(+(el.dataset.years ?? el.value)), 0, 5); refreshFuture(); break;
     case "future-track": ui.future.track = el.dataset.track === "plan" ? "plan" : "same"; rebuild(); refreshFuture(); break;
     case "calc-open": ui.calcOpen = true; renderSheet(); break;
@@ -839,6 +933,7 @@ function handle(action, el) {
       const kind = el.dataset.kind, id = el.dataset.id;
       if (ui.form && ui.form.kind === kind && ui.form.id === id) { ui.form = null; refreshFuture(); break; }
       if (kind === "policy") ui.form = { kind, id, ptype: "home", provider: "", premium: "", per: "month", renewal: "2027-06-30" };
+      else if (kind === "goal") ui.form = { kind, id, cat: "generic", name: "", target: "", due: "2027-12-31", auto: 0 };
       else {
         const pot = S.pots.goals.find(x => x.id === id);
         ui.form = kind === "auto" ? { kind, id, amount: pot.auto ? pot.auto.amount : 50, every: pot.auto ? pot.auto.every : "payday" } : { kind, id, amount: 100 };
@@ -846,6 +941,19 @@ function handle(action, el) {
       refreshFuture(); break;
     }
     case "form-cancel": ui.form = null; refreshFuture(); break;
+    case "bg-edit": ui.bgOpen = !ui.bgOpen; render(); break;
+    case "bg-set": setBackground(el.dataset.id); render(); toast(`Background set to ${BACKGROUNDS.find(b => b[0] === el.dataset.id)[1]}`); break;
+    case "form-icon": if (ui.form && ui.form.kind === "goal") { ui.form.cat = el.dataset.id; refreshFuture(); } break;
+    case "open-goal": { const id = el.dataset.id; ui.tab = "main"; ui.gearOpen = false; render(); scrollToId("goal-" + id); break; }
+    case "open-loans": ui.tab = "main"; ui.gearOpen = false; render(); scrollToId("loans"); break;
+    case "open-quests": ui.tab = "main"; ui.gearOpen = false; render(); scrollToId("quests"); break;
+    case "quest-log": {
+      const id = el.dataset.id, q = quests().find(x => x.id === id);
+      if (!q || !q.log || q.have >= q.need) break;
+      ui.quests[id]++;
+      toast(ui.quests[id] >= q.need ? `🏅 Quest done: ${q.title}` : `Logged · ${ui.quests[id]} of ${q.need} ${q.unit}`, { confetti: ui.quests[id] >= q.need });
+      refreshFuture(); break;
+    }
     case "form-remove": {
       const f = ui.form; if (!f) break;
       actions.autos[f.id] = null; ui.form = null; toast("Auto-save removed"); render(); break;
@@ -859,8 +967,30 @@ function handle(action, el) {
   }
 }
 
+function scrollToId(id) { requestAnimationFrame(() => { const c = document.getElementById(id); if (c) c.scrollIntoView({ behavior: "smooth", block: "start" }); }); }
+
 function saveForm() {
   const f = ui.form; if (!f) return;
+  if (f.kind === "goal") {
+    const name = f.name.trim(), target = Math.round(parseFloat(f.target)), due = new Date(f.due + "T00:00:00"), auto = Math.round(parseFloat(f.auto) || 0);
+    if (!name) { toast("Give the goal a name"); return; }
+    if (!(target >= 50)) { toast("Enter a target of at least $50"); return; }
+    if (isNaN(due) || due <= APP.today) { toast("Pick a date in the future"); return; }
+    const picture = GOAL_PICTURES.find(i => i[0] === f.cat);
+    const [, label, emoji] = picture || GOAL_ICONS.find(i => i[0] === f.cat) || GOAL_ICONS.at(-1);
+    const id = "g" + (ui.customGoals.length + 1) + "-" + GOALS.length;
+    GOALS.push({ id, name, fund: `${name} fund`, type: picture ? f.cat : "other", cat: picture ? undefined : f.cat, emoji, target, saved: 0, due, auto: null, priority: 10 + GOALS.length, desc: label });
+    ui.customGoals.push(id);
+    let note = "";
+    if (auto > 0) {
+      actions.autos[id] = { amount: auto, every: "payday" };
+      rebuild();
+      if (S.hardship) { delete actions.autos[id]; note = " · auto-save left off, it would leave you short before payday"; }
+    }
+    ui.form = null;
+    toast(`${emoji} ${esc(name)} added · it is now in your window${note}`);
+    render(); scrollToId("goal-" + id); return;
+  }
   if (f.kind === "policy") {
     const premium = parseFloat(f.premium), renewal = new Date(f.renewal + "T00:00:00");
     if (!f.provider.trim()) { toast("Add the insurer's name"); return; }
@@ -932,6 +1062,8 @@ function playFutureScene() {
 function resetDemo() {
   clearSceneTimers();
   actions = defaultActions();
+  ui.customGoals.forEach(id => { const i = GOALS.findIndex(g => g.id === id); if (i >= 0) GOALS.splice(i, 1); });
+  ui.customGoals = []; ui.quests = { delivery: 0, coffee: 0 };
   Object.assign(ui, { scenario: "normal", tab: "home", chat: [], slider: 24, hardshipDone: [], customTx: null, scene: null, future: { years: 0, track: "same" }, assumptions: { ...ASSUMPTIONS }, windowShow: defaultShow(), gearOpen: false, moodOpen: false, moodLive: null, calcOpen: false, form: null, policies: [] });
   ui.expanded.clear();
   render(); toast("Demo reset");
@@ -980,5 +1112,6 @@ window.addEventListener("DOMContentLoaded", () => {
   });
   $("#clear-csv").addEventListener("click", () => { ui.customTx = null; render(); toast("Back to the demo customer"); });
   checkLive();
+  loadBackground();
   render();
 });

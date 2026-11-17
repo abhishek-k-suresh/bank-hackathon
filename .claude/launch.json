@@ -4,7 +4,7 @@
     {
       "name": "future-me",
       "runtimeExecutable": "python",
-      "runtimeArgs": ["-m", "http.server", "8080", "--directory", "app"],
+      "runtimeArgs": ["serve_nocache.py", "8080"],
       "port": 8080
     }
   ]

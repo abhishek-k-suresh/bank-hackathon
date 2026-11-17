@@ -39,6 +39,18 @@ const GOALS = [
     target: 6000, saved: 2100, due: new Date(2028, 10, 30), auto: null, priority: 2,
     desc: "Two weeks in Tokyo and Kyoto",
   },
+  // generic goals: no bespoke picture — shown as floating category coins in the window.
+  // `cat` picks the icon + glow hue (see CAT_HUE in art.js).
+  {
+    id: "laptop", name: "New laptop", fund: "Tech Fund", type: "other", cat: "electronics", emoji: "💻",
+    target: 2400, saved: 360, due: new Date(2027, 5, 30), auto: null, priority: 3,
+    desc: "MacBook for side projects",
+  },
+  {
+    id: "festival", name: "Summer festival", fund: "Fun Fund", type: "other", cat: "entertainment", emoji: "🎟️",
+    target: 800, saved: 180, due: new Date(2027, 0, 20), auto: null, priority: 4,
+    desc: "Tickets + weekend away",
+  },
 ];
 
 /* ---------- emergency fund ----------

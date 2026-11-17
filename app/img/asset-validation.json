@@ -1,0 +1,280 @@
+{
+  "expected": 68,
+  "created": 68,
+  "issues": [],
+  "extras": [],
+  "files": {
+    "avatar-m-thriving.png": [
+      320,
+      448
+    ],
+    "avatar-m-happy.png": [
+      320,
+      448
+    ],
+    "avatar-m-okay.png": [
+      320,
+      448
+    ],
+    "avatar-m-worried.png": [
+      320,
+      448
+    ],
+    "avatar-m-stressed.png": [
+      320,
+      448
+    ],
+    "avatar-m-calm.png": [
+      320,
+      448
+    ],
+    "avatar-m-celebrate-01.png": [
+      320,
+      448
+    ],
+    "avatar-m-celebrate-02.png": [
+      320,
+      448
+    ],
+    "avatar-m-celebrate-03.png": [
+      320,
+      448
+    ],
+    "avatar-m-celebrate-04.png": [
+      320,
+      448
+    ],
+    "avatar-m-celebrate-05.png": [
+      320,
+      448
+    ],
+    "avatar-m-celebrate-06.png": [
+      320,
+      448
+    ],
+    "avatar-f-thriving.png": [
+      320,
+      448
+    ],
+    "avatar-f-happy.png": [
+      320,
+      448
+    ],
+    "avatar-f-okay.png": [
+      320,
+      448
+    ],
+    "avatar-f-worried.png": [
+      320,
+      448
+    ],
+    "avatar-f-stressed.png": [
+      320,
+      448
+    ],
+    "avatar-f-calm.png": [
+      320,
+      448
+    ],
+    "avatar-f-celebrate-01.png": [
+      320,
+      448
+    ],
+    "avatar-f-celebrate-02.png": [
+      320,
+      448
+    ],
+    "avatar-f-celebrate-03.png": [
+      320,
+      448
+    ],
+    "avatar-f-celebrate-04.png": [
+      320,
+      448
+    ],
+    "avatar-f-celebrate-05.png": [
+      320,
+      448
+    ],
+    "avatar-f-celebrate-06.png": [
+      320,
+      448
+    ],
+    "bg-base.png": [
+      1360,
+      800
+    ],
+    "bg-sun.png": [
+      200,
+      200
+    ],
+    "bg-cloud-light.png": [
+      320,
+      160
+    ],
+    "bg-cloud-dark.png": [
+      320,
+      160
+    ],
+    "bg-sparkle.png": [
+      96,
+      96
+    ],
+    "goal-car.png": [
+      560,
+      240
+    ],
+    "goal-house.png": [
+      560,
+      240
+    ],
+    "goal-bike.png": [
+      560,
+      240
+    ],
+    "trip-destination.png": [
+      200,
+      140
+    ],
+    "trip-clouds.png": [
+      320,
+      160
+    ],
+    "trip-plane.png": [
+      120,
+      80
+    ],
+    "coin-entertainment.png": [
+      192,
+      192
+    ],
+    "coin-electronics.png": [
+      192,
+      192
+    ],
+    "coin-travel.png": [
+      192,
+      192
+    ],
+    "coin-education.png": [
+      192,
+      192
+    ],
+    "coin-gift.png": [
+      192,
+      192
+    ],
+    "coin-tech.png": [
+      192,
+      192
+    ],
+    "coin-home.png": [
+      192,
+      192
+    ],
+    "coin-health.png": [
+      192,
+      192
+    ],
+    "coin-wedding.png": [
+      192,
+      192
+    ],
+    "coin-baby.png": [
+      192,
+      192
+    ],
+    "coin-pet.png": [
+      192,
+      192
+    ],
+    "coin-generic.png": [
+      192,
+      192
+    ],
+    "shield-insurance-on.png": [
+      144,
+      168
+    ],
+    "shield-insurance-warning.png": [
+      144,
+      168
+    ],
+    "shield-emergency-empty.png": [
+      144,
+      168
+    ],
+    "shield-emergency-fill.png": [
+      144,
+      168
+    ],
+    "shield-emergency-warning.png": [
+      144,
+      168
+    ],
+    "safe-closed.png": [
+      240,
+      264
+    ],
+    "safe-open.png": [
+      240,
+      264
+    ],
+    "vault-coins.png": [
+      216,
+      120
+    ],
+    "vault-notes.png": [
+      216,
+      120
+    ],
+    "vault-bars.png": [
+      216,
+      120
+    ],
+    "vault-chest.png": [
+      216,
+      120
+    ],
+    "loan-weight.png": [
+      96,
+      128
+    ],
+    "check-badge.png": [
+      96,
+      96
+    ],
+    "burst-01.png": [
+      240,
+      240
+    ],
+    "safe-door-01.png": [
+      240,
+      264
+    ],
+    "burst-02.png": [
+      240,
+      240
+    ],
+    "safe-door-02.png": [
+      240,
+      264
+    ],
+    "burst-03.png": [
+      240,
+      240
+    ],
+    "safe-door-03.png": [
+      240,
+      264
+    ],
+    "burst-04.png": [
+      240,
+      240
+    ],
+    "safe-door-04.png": [
+      240,
+      264
+    ]
+  }
+}

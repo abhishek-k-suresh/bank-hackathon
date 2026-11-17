@@ -225,9 +225,59 @@ body.hardship .msg.me div { background: var(--calm); }
 .scene-wrap { border-radius: 14px; overflow: hidden; line-height: 0; cursor: pointer; }
 .scene { display: block; font-family: var(--font); }
 .scene .tap { cursor: pointer; }
-.scene [data-anim] { transition: width .7s ease, y .7s ease; }
+.scene [data-anim] { transition: width .7s ease, y .7s ease, transform .7s ease; }
 .pop, .pop-in { animation: pop .55s ease; transform-box: fill-box; transform-origin: 50% 85%; }
 @keyframes pop { 0% { transform: scale(.8); } 60% { transform: scale(1.1); } 100% { transform: scale(1); } }
+
+/* ---------- window scene: ambient motion and frame sequences ---------- */
+.scene .fcoin { animation: fcoin-float 3.4s ease-in-out infinite; filter: drop-shadow(0 0 3px var(--glow)); cursor: pointer; }
+@keyframes fcoin-float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+.protected { filter: drop-shadow(0 0 3px #2fd08a); }
+.scene .drift { animation: drift 16s ease-in-out infinite alternate; }
+.scene .drift.slow { animation-duration: 23s; animation-direction: alternate-reverse; }
+@keyframes drift { from { transform: translateX(-4px); } to { transform: translateX(5px); } }
+.scene .twinkle { animation: twinkle 1.8s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
+@keyframes twinkle { 0%, 100% { opacity: .25; transform: scale(.6); } 50% { opacity: 1; transform: scale(1); } }
+/* frame sequences: stacked images, one visible at a time (--i = frame index) */
+.scene .fr { opacity: 0; }
+@keyframes frames4 { 0% { opacity: 1; } 25%, 100% { opacity: 0; } }
+/* savings reach a new tier: the safe door swings open, then coins burst out (once) */
+.scene .tierfx.pop { animation: none; }
+.scene .tierfx.pop .door .fr { animation: frames4 .8s steps(1) 1; animation-delay: calc(var(--i) * .2s); }
+.scene .tierfx.pop .burst .fr { animation: frames4 .48s steps(1) 1; animation-delay: calc(.6s + var(--i) * .12s); }
+.hardship .scene .twinkle { animation: none; }
+@media (prefers-reduced-motion: reduce) {
+  .scene .fcoin, .scene .drift, .scene .twinkle, .pop, .pop-in { animation: none; }
+  .scene [data-anim] { transition: none; }
+  .scene .tierfx.pop .fr { animation: none; }
+}
+.avset { display: inline-flex; gap: 4px; }
+.pic-pick { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin: 4px 0 6px; }
+.pic-pick button { border: 2px solid transparent; background: var(--surface-2); border-radius: 12px; padding: 4px 4px 6px; cursor: pointer; font: inherit; font-size: 11px; color: var(--ink-2); display: grid; gap: 2px; }
+.pic-pick button img { width: 100%; height: auto; display: block; }
+.pic-pick button.on { border-color: var(--blue); background: #eef4fc; color: var(--ink); font-weight: 700; }
+.scene .quest-note { filter: drop-shadow(0 1px 2px rgba(31, 28, 79, .35)); }
+.bg-pick { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; }
+.bg-pick button { border: 2px solid transparent; background: none; border-radius: 10px; padding: 2px; cursor: pointer; font: inherit; font-size: 10px; color: var(--ink-2); display: grid; gap: 3px; }
+.bg-pick button img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-radius: 7px; display: block; }
+.bg-pick button.on { border-color: var(--blue); color: var(--ink); font-weight: 700; }
+.scene-wrap.mini { margin: 8px 0 10px; cursor: default; }
+/* ---------- goal icon picker, quests ---------- */
+.icon-pick { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; margin: 4px 0 8px; }
+.icon-pick button { border: 2px solid transparent; background: var(--surface-2); border-radius: 12px; padding: 4px; cursor: pointer; line-height: 0; }
+.icon-pick button img { width: 100%; height: auto; }
+.icon-pick button.on { border-color: var(--blue); background: #eef4fc; }
+.ico img { width: 28px; height: 28px; display: block; }
+.ico.grey img { filter: grayscale(1); }
+.quest { display: flex; gap: 10px; align-items: flex-start; padding: 10px 0; border-top: 1px solid var(--line); }
+.card-head + .quest { border-top: 0; padding-top: 2px; }
+.quest > div { flex: 1; min-width: 0; }
+.quest b { font-size: 13.5px; }
+.quest small { display: block; color: var(--ink-2); font-size: 12px; line-height: 1.4; margin: 2px 0 6px; }
+.quest .split { margin-top: 6px; align-items: center; }
+.quest.done b { color: var(--good); }
+.quest .ico { font-size: 20px; width: 30px; text-align: center; flex: none; }
+.letter .row-actions { margin-top: 8px; }
 .mood-note { background: #eef4fc; border-radius: 12px; padding: 8px 10px; font-size: 13px; line-height: 1.4; margin-top: 8px; display: grid; gap: 2px; }
 .mood-note.calm { background: #e3f1f6; }
 .mood-note small { color: var(--ink-3); font-size: 10.5px; }

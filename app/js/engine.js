@@ -510,7 +510,7 @@ function simulate(state, track, A, months = 120) {
   const pauseMonths = actions.pauseTransfers ? PAUSE_DAYS / 30.4 : 0;
 
   const goals = pots.goals.map((g, i) => ({
-    id: g.id, name: g.name, fund: g.fund, type: g.type, emoji: g.emoji, target: g.target, due: g.due, dueM: monthsUntil(g.due),
+    id: g.id, name: g.name, fund: g.fund, type: g.type, cat: g.cat, emoji: g.emoji, target: g.target, due: g.due, dueM: monthsUntil(g.due),
     start: g.saved, saved: Math.min(g.saved, g.target), done: g.saved >= g.target, doneAt: g.saved >= g.target ? 0 : null,
     own: i === 0 ? (track === "plan" ? plan.withPlan.monthly : plan.current.monthly) : autoMonthly(g.auto),
   }));
@@ -525,7 +525,7 @@ function simulate(state, track, A, months = 120) {
     const efTarget = EMERGENCY_FUND.months * ess;
     return {
       m, date: addMonths(APP.today, m), ...flow, cash, card, future, essentials: ess,
-      goals: goals.map(g => ({ id: g.id, name: g.name, fund: g.fund, type: g.type, emoji: g.emoji, target: g.target, due: g.due, dueM: g.dueM, start: g.start, saved: g.done ? g.target : g.saved, pct: g.done ? 1 : clamp(g.saved / g.target, 0, 1), done: g.done, doneAt: g.doneAt })),
+      goals: goals.map(g => ({ id: g.id, name: g.name, fund: g.fund, type: g.type, cat: g.cat, emoji: g.emoji, target: g.target, due: g.due, dueM: g.dueM, start: g.start, saved: g.done ? g.target : g.saved, pct: g.done ? 1 : clamp(g.saved / g.target, 0, 1), done: g.done, doneAt: g.doneAt })),
       ef: { saved: ef.saved, target: efTarget, pct: clamp(ef.saved / efTarget, 0, 1), monthsCovered: ef.saved / ess },
       loans: loans.map(l => ({ id: l.id, name: l.name, balance: l.balance, original: l.original, repayment: l.repayment, rate: l.rate, paidOffAt: l.paidOffAt })),
       // completed goals have been bought, so their money is no longer in the vault
