@@ -1,4 +1,4 @@
-# Future Me — AI money companion (Westpac AI & Banking hackathon prototype)
+# Future Me - AI money companion (Westpac AI & Banking hackathon prototype)
 
 A gamified AI companion inside the banking app. It reads a customer's spending, predicts where their
 money is heading, turns that into a goal plan they can actually follow, rewards the habits that get them
