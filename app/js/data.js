@@ -11,13 +11,13 @@ const APP = {
 };
 
 const CUSTOMER = {
-  first: "Abhi",
-  name: "Abhi S",
+  first: "Sara",
+  name: "Sara D",
   age: 27,
   suburb: "Surfers Paradise",
   payNet: 2120,            // net pay, fortnightly
   firstPayday: new Date(2026, 4, 21), // Thu 21 May 2026; every 14 days after
-  balances: { everyday: 2184.6 },     // savings now live on each goal and the emergency fund below
+  balances: { everyday: 1550.6 },     // savings now live on each goal and the emergency fund below
   savingsRate: 0.045,      // p.a. on every savings pot
   card: { limit: 3000, owing: 640, due: new Date(2026, 10, 24), minimum: 25 },
 };
@@ -31,35 +31,35 @@ const CUSTOMER = {
 const GOALS = [
   {
     id: "car", name: "Ford GT 40", fund: "Car Fund", type: "car", emoji: "🚗",
-    target: 14000, saved: 3420, due: new Date(2028, 3, 30), auto: null, priority: 1,
+    target: 14000, saved: 9000, due: new Date(2028, 11, 31), auto: null, priority: 1,
     desc: "2005 Ford GT 40 after trading in the old Corolla",
   },
   {
     id: "trip", name: "Japan trip", fund: "Trip Fund", type: "vacation", emoji: "🗾",
-    target: 6000, saved: 2100, due: new Date(2028, 10, 30), auto: null, priority: 2,
+    target: 6000, saved: 3000, due: new Date(2029, 5, 30), auto: null, priority: 2,
     desc: "Two weeks in Tokyo and Kyoto",
   },
   // generic goals: no bespoke picture — shown as floating category coins in the window.
   // `cat` picks the icon + glow hue (see CAT_HUE in art.js).
   {
     id: "laptop", name: "New laptop", fund: "Tech Fund", type: "other", cat: "electronics", emoji: "💻",
-    target: 2400, saved: 360, due: new Date(2027, 5, 30), auto: null, priority: 3,
+    target: 2400, saved: 240, due: new Date(2026, 8, 30), auto: { amount: 40, every: "payday" }, priority: 3,
     desc: "MacBook for side projects",
   },
   {
     id: "festival", name: "Summer festival", fund: "Fun Fund", type: "other", cat: "entertainment", emoji: "🎟️",
-    target: 800, saved: 180, due: new Date(2027, 0, 20), auto: null, priority: 4,
+    target: 800, saved: 100, due: new Date(2026, 8, 30), auto: { amount: 30, every: "payday" }, priority: 4,
     desc: "Tickets + weekend away",
   },
 ];
 
 /* ---------- emergency fund ----------
    Target is not stored: the engine calculates it as `months` × essential monthly costs. */
-const EMERGENCY_FUND = { name: "Emergency fund", months: 3, saved: 3450 };
+const EMERGENCY_FUND = { name: "Emergency fund", months: 3, saved: 200 };
 
 /* ---------- loans ---------- */
 const LOANS = [
-  { id: "pl", name: "Personal loan", lender: "Westpac", original: 10000, balance: 8500, rate: 0.099, repayment: 166, day: 15 },
+  { id: "pl", name: "Personal loan", lender: "Westpac", original: 8000, balance: 7900, rate: 0.099, repayment: 166, day: 15 },
 ];
 
 /* ---------- insurances ----------

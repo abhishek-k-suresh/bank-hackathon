@@ -3,12 +3,12 @@
 Record the browser with the presenter panel visible on the left and the phone in the middle.
 Reset with `0` before recording. Press `1` `2` `3` `4` `5` to jump between scenes.
 
-The demo customer is fictional: first name Abhi, second name S, 27, Surfers Paradise.
+The demo customer is fictional: first name Sara, second name D, 27, Surfers Paradise.
 
 ## 0:00 — Hook (30 s)
 
 "Most banking apps tell you what you spent. Future Me tells you where you're heading, and what to do about it.
-Meet Abhi S, 27, Surfers Paradise, saving for a Ford GT 40 and a trip to Japan. Everything you'll see runs from six months of Abhi's transactions."
+Meet Sara D, 27, Surfers Paradise, saving for a Ford GT 40 and a trip to Japan. Everything you'll see runs from six months of Sara's transactions."
 
 Show Home. Point at **Your window**: "This is the whole account as a picture. No numbers. The car fills with colour as it's saved for, the shield is the emergency fund, the vault is savings, and that weight is a loan."
 Read the "Future Me says" sentence: about $362 left over each month after bills and the loan, only $200 reaches the Car Fund.
@@ -22,7 +22,7 @@ Tap **Why?** — "every prediction explains itself."
   - Food delivery $313 a month, 88% on Friday and Saturday nights.
   - 51% of fun spending lands in the three days after payday.
 - Tap **Cancel Apple Music**: toast shows the saving and the car date moving closer, first badge earned.
-- Say: "It never cancels anything itself. One tap, and only because Abhi agreed."
+- Say: "It never cancels anything itself. One tap, and only because Sara agreed."
 
 ## 1:45 — Scene 2: The car goal (press 2) (105 s)
 
@@ -30,7 +30,7 @@ Tap **Why?** — "every prediction explains itself."
 - Switch on the plan steps one at a time. Each toggle moves the date live. Read the toast.
 - Drag the **time slider** to 10 years: "same habits, very different decade."
 - Scroll to **This weekend**: "Saturday delivery is $42. Send it to Future Me instead and the car is a few days closer." Tap it. Confetti, badge.
-- Say: "It's Abhi's money either way. We just make the trade-off visible."
+- Say: "It's Sara's money either way. We just make the trade-off visible."
 
 ## 3:30 — Scene 3: Unlock an offer (press 3) (50 s)
 
@@ -41,8 +41,8 @@ Tap **Why?** — "every prediction explains itself."
 ## 4:20 — Scene 4: A tough month (press 4) (80 s)
 
 - Home switches to calm blue. The avatar puts a hand on its heart and a bubble asks "Want to talk to someone?"
-- "A $1,350 car repair and a reduced pay. On the current path Abhi's account dips to −$990 on 1 December, the day rent goes out."
-- "No streaks, no badges, no nudges. Nothing is lost. And notice the avatar: concerned, on Abhi's side, never ashamed."
+- "A $1,350 car repair and a reduced pay. On the current path Sara's account dips to −$990 on 1 December, the day rent goes out."
+- "No streaks, no badges, no nudges. Nothing is lost. And notice the avatar: concerned, on Sara's side, never ashamed."
 - Tap the bubble: it jumps to the four options. Walk through them.
 - Tap **Use $1,150 from your emergency fund**: sorted, lowest point back above zero. "That's what the fund is for. The shield drops, and the app offers to rebuild it at $50 a payday."
 - Point at **Talk to Westpac Assist**: "a person, not a bot, and no fees."
@@ -52,7 +52,7 @@ Tap **Why?** — "every prediction explains itself."
 
 Press `5` and let it play. Talk over it.
 
-- "Now the long view. This slider runs from today to five years. First, the same track: Abhi changes nothing."
+- "Now the long view. This slider runs from today to five years. First, the same track: Sara changes nothing."
 - As it steps through the years: "The avatar goes worried in year one and stays there. By year five the car finally arrived, more than two years late. The Japan trip is still mostly grey and nearly three years overdue. The shield never filled. The loan weight is still there."
 - When it flips to **With my plan**: "Same five years, with the plan. The car arrives in March 2028, Japan in September 2028, the emergency fund is full, the loan is gone by January 2030, and the vault is a treasure chest. Thriving."
 - Tap the picture: "And if you want the numbers, they're one tap away." Show goals with **Set up auto-save** and **Add money now**, the loan, the insurances.

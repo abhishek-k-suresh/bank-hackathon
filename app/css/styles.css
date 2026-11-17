@@ -265,6 +265,13 @@ body.hardship .msg.me div { background: var(--calm); }
 @keyframes twinkle { 0%, 100% { opacity: .25; transform: scale(.6); } 50% { opacity: 1; transform: scale(1); } }
 /* frame sequences: stacked images, one visible at a time (--i = frame index) */
 .scene .fr { opacity: 0; }
+/* arriving at thriving: the avatar plays its six celebration frames once, then rests on the still picture */
+.scene .moodfx.pop { animation: none; }
+.scene .moodfx.pop .celebrate .fr { animation: frames6 1.2s steps(1) 1; animation-delay: calc(var(--i) * .2s); }
+.scene .moodfx.pop .celebrate ~ .cele-still, .scene .moodfx.pop:has(.celebrate) .cele-still { animation: cele-wait 1.2s steps(1) 1; }
+@keyframes frames6 { 0% { opacity: 1; } 16.667%, 100% { opacity: 0; } }
+@keyframes cele-wait { from { opacity: 0; } to { opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .scene .moodfx.pop .celebrate .fr, .scene .moodfx.pop .cele-still { animation: none; } }
 @keyframes frames4 { 0% { opacity: 1; } 25%, 100% { opacity: 0; } }
 /* savings reach a new tier: the safe door swings open, then coins burst out (once) */
 .scene .tierfx.pop { animation: none; }
