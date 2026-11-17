@@ -37,16 +37,20 @@
         <div class="phone-screen">
           <div class="notch"></div>
           <header class="appbar">
-            <div><b>Future Me</b><small id="appbar-sub">Your money, a few steps ahead</small></div>
-            <div class="ava" id="appbar-ava">A</div>
+            <div><b id="appbar-title">Future Me</b><small id="appbar-sub">Your money, a few steps ahead</small></div>
+            <div class="appbar-icons">
+              <button data-action="search" aria-label="Search Future Me" title="Search Future Me: goals, loans, quests">🔍</button>
+              <button data-action="tab" data-tab="chat" aria-label="Chat with Future Me" title="Chat with Future Me"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path fill="#6a1b9a" d="M4 3h16a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H10l-5 4.2V17H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"/><circle cx="8" cy="10" r="1.4" fill="#fff"/><circle cx="12" cy="10" r="1.4" fill="#fff"/><circle cx="16" cy="10" r="1.4" fill="#fff"/></svg></button>
+              <button class="ava" id="appbar-ava" data-action="open-main" aria-label="Your Future Me page" title="Your Future Me page">A</button>
+            </div>
           </header>
           <main id="view"></main>
           <nav class="tabbar">
             <button data-action="tab" data-tab="home"><span>🏠</span>Home</button>
-            <button data-action="tab" data-tab="insights"><span>🔍</span>Insights</button>
-            <button data-action="tab" data-tab="goal"><span>🚗</span>Goal</button>
-            <button data-action="tab" data-tab="rewards"><span>🏆</span>Rewards</button>
-            <button data-action="tab" data-tab="chat"><span>💬</span>Ask</button>
+            <button data-action="tab" data-tab="accounts"><span>💰</span>Accounts</button>
+            <button data-action="tab" data-tab="payments"><span>💲</span>Payments</button>
+            <button data-action="tab" data-tab="insights"><span>💡</span>Insights</button>
+            <button data-action="tab" data-tab="more"><span>▦</span>More</button>
           </nav>
           <div id="sheet" data-action="sheet-bg"></div>
           <div id="toast"></div>
