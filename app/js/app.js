@@ -12,7 +12,10 @@ const ui = {
   avatarSet: "m", // "m" | "f": which avatar set the window shows
   customGoals: [],                  // ids of goals created in the main panel (removed on reset)
   bgOpen: false,                    // background picker on the window page
+  questsSeen: new Set(),            // quests already announced as done (so each unlock is toasted once)
   quests: { delivery: 0, coffee: 0 }, // check-ins for the quests that are logged by hand
+  searchOpen: false, search: "",    // search on the Future Me page
+  goalEdits: {},                    // original copies of built-in goals the customer edited (restored on reset)
 };
 function defaultActions() {
   return {
@@ -46,13 +49,16 @@ function render() {
   wireCharts(v);
   runAnims(v);
   renderSheet();
-  const activeTab = ui.tab === "main" ? "home" : ui.tab;
+  const activeTab = TAB_PARENT[ui.tab] || ui.tab;
+  $("#appbar-title").textContent = PAGE_TITLES[ui.tab] || APP.name;
   document.querySelectorAll(".tabbar button").forEach(b => b.classList.toggle("active", b.dataset.tab === activeTab));
   $("#appbar-sub").textContent = S.calm ? "Calm mode · let's sort this out" : APP.tagline;
   $("#appbar-ava").textContent = CUSTOMER.first.charAt(0);
   document.body.classList.toggle("hardship", !!S.calm);
+  document.body.classList.toggle("on-home", ui.tab === "home"); // Home has its own header, so the app bar is hidden there
   $("#scenario").value = ui.scenario;
   document.querySelectorAll(".scenes button").forEach(b => b.classList.toggle("active", b.dataset.scene === ui.scene));
+  checkUnlocks();
 }
 
 /* ---------- animate from the previous value (clip widths, shield level) and pop on change ---------- */
@@ -102,6 +108,67 @@ function burst() {
   setTimeout(() => (box.innerHTML = ""), 2600);
 }
 
+// which bottom tab lights up for pages that are not on the tab bar, and the title each page shows in the header
+const TAB_PARENT = { main: "home", goal: "more", rewards: "more", chat: "more" };
+const PAGE_TITLES = { main: "Future Me", accounts: "Accounts", payments: "Payments", insights: "Insights & tools", more: "More", goal: "Goal plan", rewards: "Rewards", chat: "Ask Future Me" };
+const NOT_IN_DEMO = "This part of the banking app is not in the prototype";
+
+// the row of sub-tabs under a page title; only the first is built, the others say so
+const subTabs = labels => `<div class="subtabs">${labels.map(([icon, label], i) => `<button class="${i ? "" : "on"}" ${i ? `data-action="stub"` : ""}><span>${icon}</span>${label}</button>`).join("")}</div>`;
+
+/* ================= ACCOUNTS ================= */
+function accountsView() {
+  const { balances, pots } = S;
+  const owing = actions.paidCard ? 0 : CUSTOMER.card.owing;
+  const savings = pots.goals.filter(g => g.saved < g.target).map(g => [g.fund, g.saved, g.id]).concat([[pots.ef.name, pots.ef.saved, null]]);
+  const credit = balances.everyday + sum(savings.map(s => s[1]));
+  const debit = owing + sum(pots.loans.map(l => l.balance));
+  const acct = (name, amount, foot, action) => `
+    <section class="card acct" ${action}>
+      <div class="acct-top"><span>${esc(name)}</span><b>${money2(amount)}</b></div>
+      ${foot ? `<div class="acct-foot">${foot}</div>` : ""}
+    </section>`;
+  return `
+    ${subTabs([["💰", "Overview"], ["💳", "Cards"]])}
+    <h3 class="grp">Cash</h3>
+    ${acct("Westpac Choice", balances.everyday, `<span>💳 Everyday card</span><a data-action="stub">View</a>`, `data-action="open-bank"`)}
+    ${savings.map(([name, amt, id]) => acct(`Westpac Life · ${name}`, amt, `<span>On track for ${pct1(CUSTOMER.savingsRate)} p.a. interest</span><a>${id ? "Open goal" : "Details"}</a>`, id ? `data-action="open-goal" data-id="${esc(id)}"` : `data-action="open-bank"`)).join("")}
+    <h3 class="grp">Borrowing</h3>
+    ${owing > 0 ? acct("Credit card", -owing, `<span>Due ${dateShort(CUSTOMER.card.due)}</span><a>Details</a>`, `data-action="open-bank"`) : ""}
+    ${pots.loans.map(l => acct(l.name, -l.balance, `<span>${money(l.repayment)} a month</span><a>Details</a>`, `data-action="open-loans"`)).join("")}
+    <div class="totals">
+      <div><span>Credit</span><span>${money2(credit)}</span></div>
+      <div><span>Debit</span><span>${money2(-debit)}</span></div>
+      <div class="total"><b>Total</b><b>${money2(credit - debit)}</b></div>
+    </div>
+    <section class="card open-acct" data-action="stub"><div><b>Open a new account</b><small>Bank accounts, credit cards, loans, business banking and more</small></div><span>🧾</span></section>
+    <div class="sec-row"><h3 class="sec" data-action="open-main"><img class="hico" src="img/coin-generic.png" alt="">Savings goals <span>›</span></h3><a data-action="new-goal">＋ New goal</a></div>
+    <div class="goal-strip">
+      ${pots.goals.map(g => `
+        <section class="card goal-chip" data-action="open-goal" data-id="${esc(g.id)}">
+          <div><small>${g.emoji} ${esc(g.name)}</small><b>${money2(g.saved)}</b><span>Target ${money(g.target)}<br>by ${monthYear(g.due)}</span></div>
+          ${ring(g.saved / g.target, { size: 62, stroke: 7, color: "#8e2de2", label: pct(Math.min(1, g.saved / g.target)) })}
+        </section>`).join("")}
+    </div>
+    <p class="fine">Prototype accounts for one fictional customer.</p>`;
+}
+
+/* ================= PAYMENTS ================= */
+function paymentsView() {
+  const tiles = [["🔁", "Transfer between accounts", `data-action="open-goal" data-id="${esc(S.pots.goals[0].id)}"`], ["👤", "Pay someone"], ["🆔", "Pay to PayID"], ["🅱️", "BPAY"], ["🌏", "Pay overseas"], ["🏧", "Cardless Cash"], ["💳", "View digital card"], ["⋯", "More ways to pay"]];
+  return `
+    ${subTabs([["💲", "Pay"], ["☰", "Manage"]])}
+    <div class="tiles">${tiles.map(([icon, label, action]) => `<button class="tile" ${action || `data-action="stub"`}><span>${icon}</span>${label}</button>`).join("")}</div>
+    <p class="fine">Only "Transfer between accounts" works in this prototype. It opens your goals so you can move money into one.</p>`;
+}
+
+/* ================= MORE ================= */
+function moreView() {
+  const rows = [["🪟", "Your Future Me window", "Goals, quests, the letter and the years ahead", `data-action="open-main"`], ["🚗", "Goal plan", "The plan for your hero goal, step by step", `data-action="tab" data-tab="goal"`], ["🏆", "Rewards", "Streaks, badges and offers", `data-action="tab" data-tab="rewards"`], ["💬", "Ask Future Me", "Questions about your money, answered", `data-action="tab" data-tab="chat"`], ["⚙️", "Settings", "Profile, security and notifications", `data-action="stub"`]];
+  return `
+    <div class="more-list">${rows.map(([icon, title, sub, action]) => `<button class="more-row" ${action}><span>${icon}</span><div><b>${title}</b><small>${sub}</small></div><i>›</i></button>`).join("")}</div>`;
+}
+
 /* ================= HOME ================= */
 function homeView() {
   const { balances, plan, runway, hardship, game } = S;
@@ -113,25 +180,48 @@ function homeView() {
       <div class="row-actions"><button class="btn primary" data-action="tab" data-tab="goal">See the plan</button><button class="btn ghost" data-action="tab" data-tab="insights">What changed</button></div>
     </section>`;
   return `
-    <section class="greet"><h2>Hi ${CUSTOMER.first} 👋</h2><p>${dateLong(APP.today)}</p></section>
+    <header class="hero">
+      <div class="hero-top">
+        <b>Hi ${esc(CUSTOMER.first)}</b>
+        <span class="hero-actions"><button class="hero-pill" data-action="tab" data-tab="chat">🎧 Contact us</button><button class="hero-round" data-action="open-main" aria-label="Your profile and whole picture">${esc(CUSTOMER.first.charAt(0))}</button></span>
+      </div>
+      <button class="hero-search" data-action="tab" data-tab="chat" aria-label="Search or ask a question"><span>🔍</span><span>Try 'When can I get the car?'</span><span>🎤</span></button>
+    </header>
+    <div class="home-sheet">
+    <div class="sec-row"><h3 class="sec" data-action="open-main"><span class="hico" aria-hidden="true">🔮</span>Future Me <span>›</span></h3><small class="fv-when">${esc(FV.when)}</small></div>
     ${windowPanel()}
+    ${hardship || ui.hardshipDone.length ? head : ""}
+    ${topInsight()}
+    <div class="sec-row"><h3 class="sec" data-action="open-bank"><span class="hico" aria-hidden="true">💰</span>Accounts <span>›</span></h3></div>
     <div class="balances">
-      <div class="bal"><small>Everyday</small><b>${money2(balances.everyday)}</b><span class="${runway.min.value < 0 ? "neg" : "ok"}">${runway.min.value < 0 ? "dips below $0 on " + dateShort(runway.firstNeg.date) : "lowest in 60 days " + money(runway.min.value)}</span></div>
-      <div class="bal"><small>${plan.goal.emoji} ${esc(plan.goal.name)}</small><b>${money2(balances.savings)}</b>${progressBar(plan.progress, "#2a78d6")}<span>${pct(plan.progress)} of ${money(plan.goal.target)}</span></div>
+      <div class="bal" data-action="open-bank"><small>Everyday</small><b>${money2(balances.everyday)}</b><span class="${runway.min.value < 0 ? "neg" : "ok"}">${runway.min.value < 0 ? "dips below $0 on " + dateShort(runway.firstNeg.date) : "lowest in 60 days " + money(runway.min.value)}</span></div>
+      <div class="bal" data-action="tab" data-tab="goal"><small>${plan.goal.emoji} ${esc(plan.goal.name)}</small><b>${money2(balances.savings)}</b>${progressBar(plan.progress, "#2a78d6")}<span>${pct(plan.progress)} of ${money(plan.goal.target)}</span></div>
     </div>
-    ${head}
+    ${hardship || ui.hardshipDone.length ? "" : head}
+    <div class="sec-row"><h3 class="sec" data-action="tab" data-tab="goal"><span class="hico" aria-hidden="true">🧰</span>Money tools <span>›</span></h3><a data-action="tab" data-tab="rewards">Rewards</a></div>
     ${runwayCard()}
     ${S.calm ? "" : `
     <section class="card">
       <div class="card-head"><b>Streaks</b><a data-action="tab" data-tab="rewards">Rewards ›</a></div>
       <div class="chips">${game.streaks.map(s => `<span class="chip">${s.icon} ${s.count} ${s.unit} · ${esc(s.name)}</span>`).join("")}</div>
-    </section>
-    <section class="card letter">
-      <div class="card-head"><b>📨 A letter from future you</b><small>Weekly</small></div>
-      <p>${esc(letter())}</p>
-      <div class="row-actions"><button class="btn small primary" data-action="open-quests">See your quests · ${quests().filter(q => q.have >= q.need).length} of ${quests().length} done</button></div>
     </section>`}
-    <p class="fine">Opt-in. General information, not financial advice. Nudges never block a payment.</p>`;
+    <p class="fine">Opt-in. General information, not financial advice. Nudges never block a payment.</p>
+    </div>`;
+}
+
+// the first insight, shown on Home the way the banking app shows "Top insights"
+function topInsight() {
+  const list = S.insights || [];
+  if (!list.length || S.calm) return "";
+  const i = list[0], detail = String(i.detail || "");
+  return `
+    <div class="sec-row"><h3 class="sec" data-action="tab" data-tab="insights"><span class="hico" aria-hidden="true">💡</span>Top insights <span class="count">${list.length}</span></h3><a data-action="tab" data-tab="insights">See all</a></div>
+    <section class="card insight-top" data-action="tab" data-tab="insights">
+      <div><span class="unread">Unread</span> <small>${dateShort(APP.today)} ${APP.today.getFullYear()}</small></div>
+      <b>${i.icon} ${esc(i.title)}</b>
+      <p>${esc(detail.length > 96 ? detail.slice(0, 96).trim() + "…" : detail)}</p>
+      <a>Take a look</a>
+    </section>`;
 }
 
 function futureSummary() {
@@ -143,6 +233,14 @@ function futureSummary() {
   return `About ${money(avg.leftover)} a month is left over after bills and your loan, but only ${money(plan.current.monthly)} of it reaches the Car Fund. The rest tends to get spent. On that path the ${plan.goal.name} is ${monthsText(plan.current.months)} away. With the full plan it could be ${monthsText(plan.fullPlan.months)}.`;
 }
 
+function letterCard() {
+  return `
+    <section class="card letter" id="letter">
+      <div class="card-head"><b>📨 A letter from future you</b><small>Weekly</small></div>
+      <p>${esc(letter())}</p>
+      <div class="row-actions"><button class="btn small primary" data-action="open-quests">See your quests · ${quests().filter(q => q.have >= q.need).length} of ${quests().length} done</button></div>
+    </section>`;
+}
 function letter() {
   const { plan } = S;
   const d = plan.withPlan.date || addMonths(APP.today, 24);
@@ -153,18 +251,22 @@ function letter() {
 function quests() {
   const hero = S.pots.goals[0];
   const moved = actions.sentToFuture + Object.values(actions.added).reduce((a, b) => a + b, 0);
-  return [
+  const qs = [
     { id: "payday", icon: "📅", title: "Move your saving to payday morning", why: "Money that leaves before the weekend doesn't get spent.", have: hero.auto ? 1 : 0, need: 1, unit: "auto-save set up", cta: hero.auto ? null : `<button class="btn small" data-action="form-open" data-kind="auto" data-id="${hero.id}">Set up auto-save</button>` },
     { id: "subs", icon: "🔁", title: "Cancel one subscription you don't use", why: "Two of yours overlap. Dropping one is money back every month.", have: Math.min(1, actions.cancelled.size), need: 1, unit: "cancelled", cta: actions.cancelled.size ? null : `<button class="btn small" data-action="tab" data-tab="insights">Find it in Insights</button>` },
     { id: "delivery", icon: "🛵", title: "Skip Saturday delivery for 4 weekends", why: "Keep Friday. Cook Saturday. About $40 saved each time.", have: ui.quests.delivery, need: 4, unit: "weekends", log: "I skipped it this week" },
     { id: "coffee", icon: "☕", title: "Make coffee at home 3 days this week", why: "Still Elk on Monday and Friday.", have: ui.quests.coffee, need: 3, unit: "days", log: "Made one at home" },
     { id: "topup", icon: "💸", title: "Move $50 of spare cash into any goal", why: "Small top-ups add up, and they pull the date closer.", have: Math.min(50, moved), need: 50, unit: "moved", money: true },
   ];
+  // rewards: each quest unlocks one of the backgrounds the customer does not have yet; the last one a gold window frame
+  const locked = BACKGROUNDS.filter(b => b[0] !== FREE_BG);
+  qs.forEach((q, i) => { q.reward = i < locked.length ? { kind: "bg", id: locked[i][0], label: `${locked[i][1]} background` } : { kind: "frame", label: "Gold window frame" }; });
+  return qs;
 }
 function questsCard() {
   const qs = quests(), done = qs.filter(q => q.have >= q.need).length;
   return `
-    <h3 class="h3" id="quests">Quests from future you</h3>
+    <h3 class="h3" id="quests"><img class="hico" src="img/quest-highlight.gif" alt="">Quests from future you</h3>
     <section class="card">
       <div class="card-head"><b>📨 From your letter</b><small>${done} of ${qs.length} done</small></div>
       ${qs.map(q => {
@@ -178,6 +280,7 @@ function questsCard() {
             <small>${esc(q.why)}</small>
             ${progressBar(q.have / q.need, fin ? "#1a9c6b" : "#8e2de2")}
             <div class="split"><span>${count}</span>${fin ? `<span class="pill">Done</span>` : q.log ? `<button class="btn small" data-action="quest-log" data-id="${q.id}">＋ ${q.log}</button>` : q.cta || `<span class="fine">Tracked automatically</span>`}</div>
+            <div class="reward ${fin ? "got" : ""}">${q.reward.kind === "bg" ? `<img src="img/bg-${q.reward.id}.png" alt="">` : `<i class="frame-chip"></i>`}<span>${fin ? "Unlocked" : "Reward"}: ${q.reward.label}</span>${!fin ? `<em>🔒</em>` : q.reward.kind !== "bg" ? `<em>On</em>` : SCENE_BG === q.reward.id ? `<em>In use</em>` : `<button class="btn small" data-action="bg-set" data-id="${q.reward.id}">Use it</button>`}</div>
           </div>
         </div>`;
       }).join("")}
@@ -208,16 +311,20 @@ function runwayCard() {
 function windowPanel() {
   return `
     <section class="card window">
-      <div class="card-head"><b>Your window</b><span class="win-right"><small class="fv-when">${esc(FV.when)}</small><button class="gear" data-action="win-gear" aria-label="Customise what's shown" title="Customise what's shown">⚙</button></span></div>
-      ${ui.gearOpen ? gearMenu() : ""}
       <div class="scene-wrap" data-fv="scene">${windowScene()}</div>
-      <div data-fv="note">${moodNote()}</div>
-      ${futureControls()}
-      <small class="fine hint">Tap the picture to see the numbers. Tap the avatar to hear why it feels that way.</small>
+      <div class="future quick">${yearSlider()}</div>
+      <button class="win-note" data-action="open-main" data-fv="home-note">${homeNote()}</button>
     </section>`;
 }
+const homeNote = () => `<b>${esc(moodTitle())}</b><span>Open your window ›</span>`;
 
-const windowScene = () => sceneSvg(FV, { show: ui.windowShow, calm: S.calm, uid: "w", insured: INSURANCES.concat(ui.policies).length > 0, quests: quests().filter(q => q.have < q.need).length });
+// one place for the options every copy of the window scene shares
+const sceneOpts = (uid, more = {}) => {
+  if (!unlockedBgs().includes(SCENE_BG)) SCENE_BG = FREE_BG; // a background whose quest is no longer done falls back to the free one
+  return { show: ui.windowShow, calm: S.calm, uid, insured: INSURANCES.concat(ui.policies).length > 0, quests: quests().filter(q => q.have < q.need).length, frame: frameUnlocked(), ...more };
+};
+
+const windowScene = () => sceneSvg(FV, sceneOpts("w", { tapAvatar: false })); // on Home any tap opens the window page
 
 function gearMenu() {
   const show = ui.windowShow;
@@ -262,12 +369,15 @@ function planNote() {
     : "Same track: you keep saving what you save today and nothing else changes.";
 }
 
+// the slider on its own: also used under the window on Home for a quick look ahead
+const yearSlider = () => `
+      <input type="range" class="fut-range" min="0" max="5" step="1" value="${ui.future.years}" data-action="future-years" aria-label="Years ahead" title="Drag to look up to 5 years ahead">
+      <div class="ticks"><span>Today</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5 yrs</span></div>`;
+
 function futureControls() {
   const t = ui.future.track;
   return `
-    <div class="future">
-      <input type="range" class="fut-range" min="0" max="5" step="1" value="${ui.future.years}" data-action="future-years" aria-label="Years ahead">
-      <div class="ticks"><span>Today</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5 yrs</span></div>
+    <div class="future">${yearSlider()}
       <div class="fut-row">
         <div class="seg" role="group" aria-label="Which track">
           <button data-action="future-track" data-track="same" class="${t === "same" ? "on" : ""}">Same track</button>
@@ -282,16 +392,30 @@ function futureControls() {
 // Re-draw only the parts that depend on the slider, so the slider itself stays put while it is dragged.
 const fvParts = {
   scene: windowScene,
-  "scene-main": () => sceneSvg(FV, { show: ui.windowShow, calm: S.calm, uid: "m", insured: INSURANCES.concat(ui.policies).length > 0, quests: quests().filter(q => q.have < q.need).length }),
+  "scene-main": () => sceneSvg(FV, sceneOpts("m")),
   note: moodNote,
+  "home-note": homeNote,
   "main-top": () => mainTop(),
   "main-body": () => mainBody(),
   "goal-proj": () => goalProjection(),
+  "quest-btn": () => questButton(),
 };
-function refreshFuture() {
+// the text nodes that carry a number (outside the picture): these get a soft highlight when the slider changes them
+const valueLeaves = root => [...root.querySelectorAll("b, span, small, p, .bigline")].filter(el => !el.children.length && !el.closest("svg") && /\d/.test(el.textContent));
+function refreshFuture({ flash = false } = {}) {
   FV = futureView(S, ui.future.years);
-  document.querySelectorAll("[data-fv]").forEach(el => { el.innerHTML = fvParts[el.dataset.fv](); wireCharts(el); });
-  document.querySelectorAll(".fv-when").forEach(el => (el.textContent = FV.when));
+  document.querySelectorAll("[data-fv]").forEach(el => {
+    const before = flash ? valueLeaves(el).map(x => x.textContent) : null;
+    el.innerHTML = fvParts[el.dataset.fv](); wireCharts(el);
+    if (!before) return;
+    const after = valueLeaves(el), same = after.length === before.length, seen = new Set(before);
+    after.forEach((x, i) => { if (same ? x.textContent !== before[i] : !seen.has(x.textContent)) x.classList.add("chg"); });
+  });
+  document.querySelectorAll(".fv-when").forEach(el => {
+    if (el.textContent === FV.when) return;
+    el.textContent = FV.when;
+    if (flash) { el.classList.remove("chg"); void el.offsetWidth; el.classList.add("chg"); }
+  });
   document.querySelectorAll(".fut-range").forEach(el => { if (+el.value !== ui.future.years) el.value = ui.future.years; });
   document.querySelectorAll(".seg button").forEach(b => b.classList.toggle("on", b.dataset.track === ui.future.track));
   document.querySelectorAll(".plan-note").forEach(el => (el.innerHTML = planNote()));
@@ -303,28 +427,80 @@ function refreshFuture() {
 function mainView() {
   return `
     <button class="back" data-action="tab" data-tab="home">‹ Home</button>
+    ${ui.searchOpen ? searchBox() : ""}
     <section class="greet"><h2>Your whole picture</h2><p class="fv-when">${esc(FV.when)}</p></section>
     <section class="card mainhead">
-      <div class="card-head"><b>Your window</b><button class="gear" data-action="bg-edit" aria-label="Change window background" title="Change window background" aria-expanded="${ui.bgOpen}">✎</button></div>
-      ${ui.bgOpen ? bgPicker() : ""}
-      <div class="scene-wrap mini" data-fv="scene-main">${sceneSvg(FV, { show: ui.windowShow, calm: S.calm, uid: "m", insured: INSURANCES.concat(ui.policies).length > 0, quests: quests().filter(q => q.have < q.need).length })}</div>
-      <div data-fv="main-top">${mainTop()}</div>
+      <div class="card-head"><b>Your window</b><span class="win-right"><button class="gear" data-action="bg-edit" aria-label="Change window background" title="Change window background" aria-expanded="${ui.bgOpen}">✎</button><button class="gear" data-action="win-gear" aria-label="Customise what's shown" title="Customise what's shown" aria-expanded="${ui.gearOpen}">⚙</button></span></div>
+      ${ui.bgOpen ? bgPicker() : ""}${ui.gearOpen ? gearMenu() : ""}
+      <div class="scene-wrap mini" data-fv="scene-main">${sceneSvg(FV, sceneOpts("m"))}</div>
       ${futureControls()}
+      <div data-fv="main-top">${mainTop()}</div>
+      <small class="fine hint">Drag the slider to look ahead. Tap anything in the picture to jump to it: a goal, the safe, the loan, a shield, the quest icon or your avatar.</small>
     </section>
+    ${S.calm ? "" : letterCard()}
     <div data-fv="main-body">${mainBody()}</div>
     <p class="fine">Projections are estimates from your last three months and the assumptions in Show calculation. General information, not financial advice.</p>`;
 }
 
+// quest icon in the Future Me toolbar, with the number still to do
+function questButton() {
+  if (S.calm) return "";
+  const open = quests().filter(q => q.have < q.need).length, tip = open ? `Quests from future you · ${open} to do` : "Quests from future you · all done";
+  return `<button class="gear quest-btn" data-action="open-quests" aria-label="${tip}" title="${tip}"><img src="img/quest-highlight.gif" alt="">${open ? `<i>${open}</i>` : ""}</button>`;
+}
+
+/* ---------- search on the Future Me page: goals, loans, balances, protection, quests ---------- */
+function searchIndex() {
+  const items = [];
+  S.pots.goals.forEach(g => items.push({ icon: g.emoji || "🎯", label: g.name, sub: `Goal · ${money(g.saved)} of ${money(g.target)}`, id: "goal-" + g.id, words: [g.name, g.fund, g.desc, g.cat, g.type, "goal saving"] }));
+  items.push({ icon: "＋", label: "Create a new goal", sub: "Pick an icon, a target and a date", id: "new-goal", words: ["new add create goal"] });
+  items.push({ icon: "🏦", label: "Bank balance", sub: "Everyday and savings", id: "bank", words: ["bank balance everyday savings account cash money vault safe"] });
+  FV.snap.loans.forEach(l => items.push({ icon: "⛓️", label: l.name, sub: `Loan · ${money(l.balance)} left`, id: "loans", words: [l.name, "loan debt repayment owing"] }));
+  items.push({ icon: "🛡️", label: "Emergency fund", sub: `${money(FV.snap.ef.saved)} of ${money(FV.snap.ef.target)}`, id: "ef", words: ["emergency fund rainy day safety shield protection"] });
+  INSURANCES.concat(ui.policies).forEach(p => items.push({ icon: p.icon, label: p.name, sub: `Insurance · ${p.provider}`, id: "protection", words: [p.name, p.provider, "insurance policy cover protection shield"] }));
+  if (!S.calm) {
+    items.push({ icon: "📨", label: "Letter from future you", sub: "This week's letter", id: "letter", words: ["letter future you weekly"] });
+    quests().forEach(q => items.push({ icon: q.icon, label: q.title, sub: `Quest · ${q.have >= q.need ? "done" : "reward: " + q.reward.label}`, id: "quests", words: [q.title, q.reward.label, "quest reward habit"] }));
+  }
+  items.push({ icon: "🙂", label: "How future you is feeling", sub: FV.mood.label, id: "mood", words: ["mood avatar feeling", FV.mood.label] });
+  return items;
+}
+function searchResults() {
+  const terms = ui.search.toLowerCase().split(/\s+/).filter(Boolean);
+  if (!terms.length) return `<small class="fine">Try "car", "loan", "emergency" or "quest".</small>`;
+  const hits = searchIndex().filter(it => { const hay = it.words.filter(Boolean).join(" ").toLowerCase(); return terms.every(t => hay.includes(t)); }).slice(0, 8);
+  if (!hits.length) return `<small class="fine">Nothing on this page matches "${esc(ui.search)}".</small>`;
+  return hits.map(it => `<button type="button" class="search-hit" data-action="jump" data-id="${esc(it.id)}"><span class="ico">${it.icon}</span><span><b>${esc(it.label)}</b><small>${esc(it.sub)}</small></span><em>›</em></button>`).join("");
+}
+function searchBox() {
+  return `
+    <section class="card search-card">
+      <div class="search-box"><span>🔍</span><input type="search" id="fm-search" data-search value="${esc(ui.search)}" placeholder="Search goals, loans, quests…" aria-label="Search Future Me" autocomplete="off"><button class="gear" data-action="search" aria-label="Close search" title="Close search">✕</button></div>
+      <div id="search-results">${searchResults()}</div>
+    </section>`;
+}
+
 /* ---------- window background: random on the first visit, then remembered until the customer changes it ---------- */
 const BG_KEY = "futureme.windowBackground";
+const FREE_KEY = "futureme.freeBackground";
+let FREE_BG = "abstract"; // the one background every customer starts with; the others are quest rewards
 function loadBackground() {
-  let id = null;
-  try { id = localStorage.getItem(BG_KEY); } catch (e) { /* storage blocked: pick again each visit */ }
-  if (!BACKGROUNDS.some(b => b[0] === id)) {
-    id = BACKGROUNDS[Math.floor(Math.random() * BACKGROUNDS.length)][0];
-    try { localStorage.setItem(BG_KEY, id); } catch (e) { /* ignore */ }
-  }
-  SCENE_BG = id;
+  const valid = id => BACKGROUNDS.some(b => b[0] === id);
+  let chosen = null, free = null;
+  try { chosen = localStorage.getItem(BG_KEY); free = localStorage.getItem(FREE_KEY); } catch (e) { /* storage blocked: pick again each visit */ }
+  if (!valid(free)) free = valid(chosen) ? chosen : BACKGROUNDS[Math.floor(Math.random() * BACKGROUNDS.length)][0];
+  if (!valid(chosen)) chosen = free;
+  try { localStorage.setItem(FREE_KEY, free); localStorage.setItem(BG_KEY, chosen); } catch (e) { /* ignore */ }
+  FREE_BG = free; SCENE_BG = chosen;
+}
+const unlockedBgs = () => [FREE_BG].concat(quests().filter(q => q.have >= q.need && q.reward.kind === "bg").map(q => q.reward.id));
+const frameUnlocked = () => quests().some(q => q.reward.kind === "frame" && q.have >= q.need);
+// announce each newly finished quest's reward once
+function checkUnlocks() {
+  const fresh = quests().filter(q => q.have >= q.need && !ui.questsSeen.has(q.id));
+  fresh.forEach(q => ui.questsSeen.add(q.id));
+  if (fresh.length) toast(`🎁 Quest done · unlocked: ${fresh.map(q => q.reward.label).join(", ")}`, { confetti: true });
+  return fresh.length > 0;
 }
 function setBackground(id) {
   if (!BACKGROUNDS.some(b => b[0] === id)) return;
@@ -334,14 +510,15 @@ function setBackground(id) {
 function bgPicker() {
   return `
     <div class="gear-menu">
-      <div class="card-head"><b>Window background</b><small>Stays until you change it</small></div>
-      <div class="bg-pick">${BACKGROUNDS.map(([id, label]) => `<button type="button" class="${SCENE_BG === id ? "on" : ""}" data-action="bg-set" data-id="${id}" aria-pressed="${SCENE_BG === id}"><img src="img/bg-${id}.png" alt=""><span>${label}</span></button>`).join("")}</div>
+      <div class="card-head"><b>Window background</b><small>${unlockedBgs().length} of ${BACKGROUNDS.length} unlocked</small></div>
+      <div class="bg-pick">${BACKGROUNDS.map(([id, label]) => { const open = unlockedBgs().includes(id); return `<button type="button" class="${SCENE_BG === id ? "on" : ""} ${open ? "" : "locked"}" data-action="bg-set" data-id="${id}" aria-pressed="${SCENE_BG === id}" aria-label="${label}${open ? "" : ", locked"}"><img src="img/bg-${id}.png" alt=""><span>${open ? label : "🔒 " + label}</span></button>`; }).join("")}</div>
+      <small class="fine">Finish quests to unlock more backgrounds.</small>
     </div>`;
 }
 
 function mainTop() {
   return `
-    <div class="main-top">
+    <div class="main-top" id="mood">
       ${avatarSvg(FV.mood.mood, { size: 62, calm: S.calm })}
       <div>
         <b>${esc(moodTitle())}</b>
@@ -360,7 +537,7 @@ function mainBody() {
   const row = (label, value, cls = "") => `<div class="mrow"><span>${label}</span><b class="${cls}">${fmt(value)}</b></div>`;
 
   const bank = `
-    <section class="card">
+    <section class="card" id="bank">
       <div class="card-head"><b>Bank balance</b><small>${today ? "Everyday + savings" : "Projected"}</small></div>
       <div class="bigline">${fmt(s.cash + s.savings - s.card)}</div>
       ${row("Everyday", s.cash)}
@@ -394,6 +571,7 @@ function mainBody() {
         <div class="row-actions">
           <button class="btn small ${f && f.kind === "auto" ? "primary" : ""}" data-action="form-open" data-kind="auto" data-id="${g.id}">${pot.auto ? "Change auto-save" : "Set up auto-save"}</button>
           <button class="btn small ${f && f.kind === "add" ? "primary" : ""}" data-action="form-open" data-kind="add" data-id="${g.id}">Add money now</button>
+          ${g.done ? "" : `<button class="btn small ${f && f.kind === "edit" ? "primary" : ""}" data-action="form-open" data-kind="edit" data-id="${g.id}" title="Change the name, target, date or icon">✎ Edit</button>`}
         </div>
         ${f ? goalForm(f, pot) : ""}
       </section>`;
@@ -417,7 +595,7 @@ function mainBody() {
   const protection = `
     <section class="card">
       <div class="card-head"><b>Insurances and emergency fund</b><small>${today ? "Today" : "Projected"}</small></div>
-      <div class="prot">
+      <div class="prot" id="ef">
         ${shieldSvg(FV.shield, s.ef.pct, 30)}
         <div>
           <b>Emergency fund</b>
@@ -442,14 +620,15 @@ function mainBody() {
 
   const nf = ui.form && ui.form.kind === "goal" ? ui.form : null;
   const newGoal = `
-    <section class="card">
+    <section class="card" id="new-goal">
       <div class="row-actions"><button class="btn small ${nf ? "primary" : ""}" data-action="form-open" data-kind="goal" data-id="newgoal">＋ New goal</button></div>
       ${nf ? newGoalForm(nf) : `<small class="fine">Pick a picture or an icon. It appears in your window in grey and fills with colour as you save.</small>`}
     </section>`;
-  return `${bank}${S.calm ? "" : questsCard()}<h3 class="h3">Goals</h3>${goals}${newGoal}<h3 class="h3" id="loans">Loan repayments</h3>${loans}<h3 class="h3">Protection</h3>${protection}`;
+  return `${bank}${S.calm ? "" : questsCard()}<h3 class="h3"><img class="hico" src="img/coin-generic.png" alt="">Goals</h3>${goals}${newGoal}<h3 class="h3" id="loans"><img class="hico" src="img/loan-icon.png" alt="">Loan repayments</h3>${loans}<h3 class="h3" id="protection"><img class="hico" src="img/shield-insurance-on.png" alt="">Protection</h3>${protection}`;
 }
 
 function goalForm(f, pot) {
+  if (f.kind === "edit") return newGoalForm(f, pot);
   if (f.kind === "auto") {
     let next = null;
     for (let i = 1; i <= 14 && !next; i++) { const d = addDays(APP.today, i); if (isPayday(d)) next = d; }
@@ -472,18 +651,25 @@ function goalForm(f, pot) {
 // picture goals get their own illustration in the window (img/goal-<id>.png) instead of a coin
 const GOAL_PICTURES = [["house", "House", "🏠"], ["car", "Car", "🚗"], ["bike", "Bike", "🚲"]];
 const GOAL_ICONS = [["electronics", "Electronics", "💻"], ["entertainment", "Entertainment", "🎟️"], ["travel", "Travel", "✈️"], ["education", "Education", "🎓"], ["gift", "Gift", "🎁"], ["tech", "Phone and tech", "📱"], ["home", "Home", "🏠"], ["health", "Health", "🩺"], ["wedding", "Wedding", "💍"], ["baby", "Baby", "🍼"], ["pet", "Pet", "🐾"], ["generic", "Something else", "⭐"]];
-function newGoalForm(f) {
+const isoDate = d => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+// which picker entry a goal currently uses ("" for the holiday, which has its own picture)
+const goalIconId = g => HERO_GOAL_TYPES.has(g.type) ? g.type : g.type === "vacation" ? "" : coinKey(g);
+// the same form creates a goal and edits one (pot is the goal being edited)
+function newGoalForm(f, pot = null) {
   return `
     <div class="inline-form">
-      <label>Icon</label>
+      <label>Icon${pot && pot.type === "vacation" && !f.cat ? ` <small class="fine">Holiday picture · pick one below to change it</small>` : ""}</label>
       <div class="pic-pick">${GOAL_PICTURES.map(([id, label]) => `<button type="button" class="${f.cat === id ? "on" : ""}" data-action="form-icon" data-id="${id}" aria-pressed="${f.cat === id}"><img src="img/goal-${id}.png" alt=""><span>${label}</span></button>`).join("")}</div>
       <div class="icon-pick">${GOAL_ICONS.map(([id, label]) => `<button type="button" class="${f.cat === id ? "on" : ""}" data-action="form-icon" data-id="${id}" title="${label}" aria-label="${label}" aria-pressed="${f.cat === id}"><img src="img/coin-${id}.png" alt=""></button>`).join("")}</div>
       <label>Name <input type="text" data-form="name" value="${esc(f.name)}" placeholder="e.g. New camera" aria-label="Goal name"></label>
       <label>Target <span class="money-in">$<input type="number" min="50" step="50" value="${esc(f.target)}" data-form="target" aria-label="Target amount"></span></label>
       <label>Wanted by <input type="date" data-form="due" value="${esc(f.due)}" aria-label="Wanted by date"></label>
+      ${pot ? `
+      <small class="fine">${money(pot.saved)} saved so far stays in this goal.</small>
+      <div class="row-actions"><button class="btn primary small" data-action="form-save">Save changes</button>${ui.customGoals.includes(pot.id) ? `<button class="btn small" data-action="goal-delete" data-id="${esc(pot.id)}">Delete goal</button>` : ""}<button class="btn ghost small" data-action="form-cancel">Cancel</button></div>` : `
       <label>Auto-save each payday <span class="money-in">$<input type="number" min="0" step="5" value="${esc(f.auto)}" data-form="auto" aria-label="Auto-save each payday, optional"></span></label>
       <small class="fine">Auto-save is optional. Leave it at 0 and add money by hand whenever you like.</small>
-      <div class="row-actions"><button class="btn primary small" data-action="form-save">Create goal</button><button class="btn ghost small" data-action="form-cancel">Cancel</button></div>
+      <div class="row-actions"><button class="btn primary small" data-action="form-save">Create goal</button><button class="btn ghost small" data-action="form-cancel">Cancel</button></div>`}
     </div>`;
 }
 function policyForm(f) {
@@ -631,7 +817,19 @@ function insightsView() {
   const cols = keys.map(k => ({ label: monthLabel(k), value: bm[k].spend, partial: k === monthKey(APP.today) }));
   const items = CATEGORIES.map(c => ({ label: c.label, value: avg.cats[c.id], color: c.color })).sort((a, b) => b.value - a.value);
   return `
-    <section class="greet"><h2>Where your money goes</h2><p>Average of ${S.window.map(monthLabel).join(", ")} · ${money(avg.spend)} a month on ${money(avg.income)} in</p></section>
+    ${subTabs([["🧭", "Overview"], ["✨", "Insights"], ["🥧", "Budget"], ["🗓️", "Bills"]])}
+    <div class="sec-row"><h3 class="sec" data-action="open-main"><span class="hico" aria-hidden="true">🔮</span>Future Me <span>›</span></h3><small class="fv-when">${esc(FV.when)}</small></div>
+    ${windowPanel()}
+    <h3 class="sec" style="margin:14px 2px 8px"><span class="hico" aria-hidden="true">🧰</span>Money tools</h3>
+    <div class="tiles tools">
+      <section class="tile tool" data-action="scroll-to" data-id="by-category"><small>CASH FLOW</small><b>${money(avg.income - avg.spend)}</b><i>Monthly average</i>
+        <div class="flow"><span>Expenses</span><span>${money(avg.spend)}</span></div>${progressBar(avg.spend / Math.max(avg.income, avg.spend), "#8e2de2")}
+        <div class="flow"><span>Income</span><span>${money(avg.income)}</span></div>${progressBar(avg.income / Math.max(avg.income, avg.spend), "#1f1c4f")}</section>
+      <section class="tile tool" data-action="scroll-to" data-id="by-category"><small>CATEGORIES</small><span>🏷️</span><i>${esc(items[0].label)}</i><b>-${money(items[0].value)}</b><i>Biggest category, a month</i></section>
+      <section class="tile tool" data-action="tab" data-tab="home"><small>BILLS CALENDAR</small><span>🗓️</span><i>See the next 60 days of bills on Home</i></section>
+      <section class="tile tool" data-action="tab" data-tab="goal"><small>BUDGET</small><span>🛠️</span><i>Track and plan your spending</i></section>
+    </div>
+    <section class="greet" id="by-category"><h2>Where your money goes</h2><p>Average of ${S.window.map(monthLabel).join(", ")} · ${money(avg.spend)} a month on ${money(avg.income)} in</p></section>
     <section class="card">
       <div class="card-head"><b>By category</b><small>a month</small></div>
       ${barChartH(items)}
@@ -641,7 +839,7 @@ function insightsView() {
       <div class="card-head"><b>Monthly spend</b><small>* so far</small></div>
       ${columnChart(cols)}
     </section>
-    <h3 class="h3">What I noticed</h3>
+    <h3 class="h3"><span class="hico" aria-hidden="true">💡</span>What I noticed</h3>
     ${insights.map(insightCard).join("")}
     <p class="fine">Categories are assigned automatically. Tap any insight for the reasoning.</p>`;
 }
@@ -730,7 +928,7 @@ function rewardsView() {
       ${progressBar(game.xp / game.nextXp, "#6250d6")}
       <div class="chips">${game.streaks.map(s => `<span class="chip ${s.frozen ? "frozen" : ""}">${s.icon} ${s.count} ${s.unit} · ${esc(s.name)}${s.frozen ? " ❄️" : ""}</span>`).join("")}</div>
     </section>
-    <h3 class="h3">Offers to unlock</h3>
+    <h3 class="h3"><span class="hico" aria-hidden="true">🎁</span>Offers to unlock</h3>
     ${game.offers.map(o => `
       <section class="card offer ${o.unlocked ? "unlocked" : ""} ${hardship ? "dim" : ""}">
         <div class="ins-head"><span class="ico">${o.icon}</span><div><b>${esc(o.title)}</b><small>${esc(o.req)}</small></div>${o.unlocked ? `<span class="pill">Unlocked</span>` : ""}</div>
@@ -739,7 +937,7 @@ function rewardsView() {
         ${o.cta ? `<div class="row-actions"><button class="btn primary" data-action="${o.cta.id}">${esc(o.cta.label)}</button></div>` : ""}
         ${!o.unlocked && o.target - o.progress === 1 ? `<p class="hl">One more and it's yours.</p>` : ""}
       </section>`).join("")}
-    <h3 class="h3">Badges</h3>
+    <h3 class="h3"><span class="hico" aria-hidden="true">🏅</span>Badges</h3>
     <section class="card badges ${hardship ? "dim" : ""}">
       ${game.badges.map(b => `<div class="badge ${b.earned ? "earned" : ""}"><span>${b.icon}</span><b>${esc(b.name)}</b><small>${b.earned ? "Earned" : esc(b.hint)}</small></div>`).join("")}
     </section>
@@ -857,7 +1055,7 @@ async function checkLive() {
 }
 
 /* ================= actions ================= */
-const VIEWS = { home: homeView, main: mainView, insights: insightsView, goal: goalView, rewards: rewardsView, chat: chatView };
+const VIEWS = { home: homeView, main: mainView, accounts: accountsView, payments: paymentsView, insights: insightsView, more: moreView, goal: goalView, rewards: rewardsView, chat: chatView };
 
 function goToHardship() {
   ui.tab = "home"; render();
@@ -924,8 +1122,8 @@ function handle(action, el) {
     case "win-toggle": ui.windowShow[el.dataset.id] = el.checked; ui.windowShow.auto = false; render(); break;
     case "win-auto": ui.windowShow = defaultShow(); render(); break;
     case "win-avatar": ui.avatarSet = AVATAR_SET = el.dataset.id; render(); break;
-    case "future-years": ui.future.years = clamp(Math.round(+(el.dataset.years ?? el.value)), 0, 5); refreshFuture(); break;
-    case "future-track": ui.future.track = el.dataset.track === "plan" ? "plan" : "same"; rebuild(); refreshFuture(); break;
+    case "future-years": ui.future.years = clamp(Math.round(+(el.dataset.years ?? el.value)), 0, 5); refreshFuture({ flash: true }); break;
+    case "future-track": ui.future.track = el.dataset.track === "plan" ? "plan" : "same"; rebuild(); refreshFuture({ flash: true }); break;
     case "calc-open": ui.calcOpen = true; renderSheet(); break;
     case "calc-close": ui.calcOpen = false; renderSheet(); break;
     case "calc-reset": ui.assumptions = { ...ASSUMPTIONS }; rebuild(); refreshFuture(); $("#sheet").classList.remove("open"); renderSheet(); break;
@@ -934,6 +1132,7 @@ function handle(action, el) {
       if (ui.form && ui.form.kind === kind && ui.form.id === id) { ui.form = null; refreshFuture(); break; }
       if (kind === "policy") ui.form = { kind, id, ptype: "home", provider: "", premium: "", per: "month", renewal: "2027-06-30" };
       else if (kind === "goal") ui.form = { kind, id, cat: "generic", name: "", target: "", due: "2027-12-31", auto: 0 };
+      else if (kind === "edit") { const G = GOALS.find(x => x.id === id); ui.form = { kind, id, cat: goalIconId(G), cat0: goalIconId(G), name: G.name, target: G.target, due: isoDate(G.due) }; }
       else {
         const pot = S.pots.goals.find(x => x.id === id);
         ui.form = kind === "auto" ? { kind, id, amount: pot.auto ? pot.auto.amount : 50, every: pot.auto ? pot.auto.every : "payday" } : { kind, id, amount: 100 };
@@ -942,16 +1141,42 @@ function handle(action, el) {
     }
     case "form-cancel": ui.form = null; refreshFuture(); break;
     case "bg-edit": ui.bgOpen = !ui.bgOpen; render(); break;
-    case "bg-set": setBackground(el.dataset.id); render(); toast(`Background set to ${BACKGROUNDS.find(b => b[0] === el.dataset.id)[1]}`); break;
-    case "form-icon": if (ui.form && ui.form.kind === "goal") { ui.form.cat = el.dataset.id; refreshFuture(); } break;
+    case "bg-set": {
+      const id = el.dataset.id;
+      if (!unlockedBgs().includes(id)) { const q = quests().find(x => x.reward.kind === "bg" && x.reward.id === id); toast(`🔒 Finish the quest "${q ? q.title : "in your letter"}" to unlock this`); break; }
+      setBackground(id); render(); toast(`Background set to ${BACKGROUNDS.find(b => b[0] === id)[1]}`); break;
+    }
+    case "form-icon": if (ui.form && (ui.form.kind === "goal" || ui.form.kind === "edit")) { ui.form.cat = el.dataset.id; refreshFuture(); } break;
     case "open-goal": { const id = el.dataset.id; ui.tab = "main"; ui.gearOpen = false; render(); scrollToId("goal-" + id); break; }
     case "open-loans": ui.tab = "main"; ui.gearOpen = false; render(); scrollToId("loans"); break;
+    case "open-bank": ui.tab = "main"; ui.gearOpen = false; render(); scrollToId("bank"); break;
+    case "jump": { // from the picture or a search result to the matching section of the Future Me page
+      const id = el.dataset.id; ui.tab = "main"; ui.gearOpen = false; ui.bgOpen = false;
+      if (id === "new-goal" && !(ui.form && ui.form.kind === "goal")) ui.form = { kind: "goal", id: "newgoal", cat: "generic", name: "", target: "", due: "2027-12-31", auto: 0 };
+      render(); scrollToId(id); break;
+    }
+    case "search": {
+      ui.searchOpen = !(ui.searchOpen && ui.tab === "main"); ui.search = ""; ui.tab = "main"; ui.gearOpen = false;
+      render(); view().scrollTop = 0;
+      if (ui.searchOpen) { const i = $("#fm-search"); if (i) i.focus({ preventScroll: true }); }
+      break;
+    }
+    case "goal-delete": {
+      const id = el.dataset.id, i = GOALS.findIndex(g => g.id === id);
+      if (i < 0 || !ui.customGoals.includes(id)) break;
+      const name = GOALS[i].name;
+      GOALS.splice(i, 1); ui.customGoals = ui.customGoals.filter(x => x !== id); delete actions.autos[id]; delete actions.added[id];
+      ui.form = null; toast(`${esc(name)} deleted`); render(); break;
+    }
+    case "stub": toast(NOT_IN_DEMO); break;
+    case "scroll-to": scrollToId(el.dataset.id); break;
+    case "new-goal": ui.tab = "main"; ui.gearOpen = false; ui.form = { kind: "goal", id: "newgoal", cat: "generic", name: "", target: "", due: "2027-12-31", auto: 0 }; render(); requestAnimationFrame(() => { const p = document.querySelector(".icon-pick"); if (p) p.scrollIntoView({ behavior: "smooth", block: "center" }); }); break;
     case "open-quests": ui.tab = "main"; ui.gearOpen = false; render(); scrollToId("quests"); break;
     case "quest-log": {
       const id = el.dataset.id, q = quests().find(x => x.id === id);
       if (!q || !q.log || q.have >= q.need) break;
       ui.quests[id]++;
-      toast(ui.quests[id] >= q.need ? `🏅 Quest done: ${q.title}` : `Logged · ${ui.quests[id]} of ${q.need} ${q.unit}`, { confetti: ui.quests[id] >= q.need });
+      if (!checkUnlocks()) toast(`Logged · ${ui.quests[id]} of ${q.need} ${q.unit}`);
       refreshFuture(); break;
     }
     case "form-remove": {
@@ -967,7 +1192,14 @@ function handle(action, el) {
   }
 }
 
-function scrollToId(id) { requestAnimationFrame(() => { const c = document.getElementById(id); if (c) c.scrollIntoView({ behavior: "smooth", block: "start" }); }); }
+// scroll to a section and outline it briefly, so it is clear where the tap landed
+function scrollToId(id) {
+  requestAnimationFrame(() => {
+    const c = document.getElementById(id); if (!c) return;
+    c.scrollIntoView({ behavior: "smooth", block: "start" });
+    c.classList.add("flash"); setTimeout(() => c.classList.remove("flash"), 1600);
+  });
+}
 
 function saveForm() {
   const f = ui.form; if (!f) return;
@@ -990,6 +1222,24 @@ function saveForm() {
     ui.form = null;
     toast(`${emoji} ${esc(name)} added · it is now in your window${note}`);
     render(); scrollToId("goal-" + id); return;
+  }
+  if (f.kind === "edit") {
+    const G = GOALS.find(x => x.id === f.id); if (!G) return;
+    const name = String(f.name).trim(), target = Math.round(parseFloat(f.target)), due = new Date(f.due + "T00:00:00");
+    if (!name) { toast("Give the goal a name"); return; }
+    if (!(target >= 50)) { toast("Enter a target of at least $50"); return; }
+    if (isNaN(due) || due <= APP.today) { toast("Pick a date in the future"); return; }
+    const custom = ui.customGoals.includes(G.id);
+    if (!custom && !ui.goalEdits[G.id]) ui.goalEdits[G.id] = { ...G }; // so Reset can put the demo goal back
+    G.name = name; G.target = target; G.due = due;
+    if (custom) G.fund = `${name} fund`;
+    if (f.cat && f.cat !== f.cat0) {
+      const picture = GOAL_PICTURES.find(i => i[0] === f.cat);
+      const [, label, emoji] = picture || GOAL_ICONS.find(i => i[0] === f.cat) || GOAL_ICONS.at(-1);
+      G.type = picture ? f.cat : "other"; G.cat = picture ? undefined : f.cat; G.emoji = emoji;
+      if (custom) G.desc = label;
+    }
+    ui.form = null; toast(`${G.emoji} ${esc(name)} updated`); render(); scrollToId("goal-" + G.id); return;
   }
   if (f.kind === "policy") {
     const premium = parseFloat(f.premium), renewal = new Date(f.renewal + "T00:00:00");
@@ -1047,7 +1297,7 @@ function scene(n) {
 
 // Scene 5 "Future you": Today → 5 years on the same track, then the same 5 years with the plan.
 function playFutureScene() {
-  ui.scenario = "normal"; ui.tab = "home"; resetHardshipChoices();
+  ui.scenario = "normal"; ui.tab = "main"; resetHardshipChoices();
   ui.moodOpen = true; // show the plain-English reason under the picture while it plays
   render(); view().scrollTop = 0;
   const at = (ms, fn) => sceneTimers.push(setTimeout(fn, ms));
@@ -1063,7 +1313,9 @@ function resetDemo() {
   clearSceneTimers();
   actions = defaultActions();
   ui.customGoals.forEach(id => { const i = GOALS.findIndex(g => g.id === id); if (i >= 0) GOALS.splice(i, 1); });
-  ui.customGoals = []; ui.quests = { delivery: 0, coffee: 0 };
+  Object.entries(ui.goalEdits).forEach(([id, orig]) => { const G = GOALS.find(g => g.id === id); if (G) { Object.keys(G).forEach(k => delete G[k]); Object.assign(G, orig); } });
+  ui.goalEdits = {}; ui.searchOpen = false; ui.search = "";
+  ui.customGoals = []; ui.quests = { delivery: 0, coffee: 0 }; ui.questsSeen = new Set();
   Object.assign(ui, { scenario: "normal", tab: "home", chat: [], slider: 24, hardshipDone: [], customTx: null, scene: null, future: { years: 0, track: "same" }, assumptions: { ...ASSUMPTIONS }, windowShow: defaultShow(), gearOpen: false, moodOpen: false, moodLive: null, calcOpen: false, form: null, policies: [] });
   ui.expanded.clear();
   render(); toast("Demo reset");
@@ -1084,6 +1336,8 @@ document.addEventListener("change", e => {
 document.addEventListener("input", e => {
   const range = e.target.closest("input[type=range][data-action]");
   if (range) { handle(range.dataset.action, range); return; }
+  const q = e.target.closest("[data-search]");
+  if (q) { ui.search = q.value; const box = $("#search-results"); if (box) box.innerHTML = searchResults(); return; }
   const f = e.target.closest("[data-form]");
   if (f && ui.form) { ui.form[f.dataset.form] = f.value; return; }
   const a = e.target.closest("input[data-assume]");

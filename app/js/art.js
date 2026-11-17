@@ -107,7 +107,7 @@ function backdrop(mood) {
 }
 
 /* ---------- the whole window scene (340 x 270: taller, so every piece is drawn larger) ---------- */
-function sceneSvg(fv, { show, calm = false, uid = "w", insured = true, quests = null }) {
+function sceneSvg(fv, { show, calm = false, uid = "w", insured = true, quests = null, tapAvatar = true, frame = false }) {
   const mood = avatarMood(fv.mood.mood, calm);
   const gs = `gs-${uid}`;
   const hero = fv.hero, goals = [hero].concat(fv.others).filter(Boolean);
@@ -126,14 +126,15 @@ function sceneSvg(fv, { show, calm = false, uid = "w", insured = true, quests = 
 
   const efFull = fv.shield === "full";
   const shields = show.shield ? `
-    <g transform="translate(8 8)"><g data-pop="shield" data-val="${fv.shield}" class="${efFull ? "protected" : ""}">${emergencyShield(fv.shield, fv.snap.ef.pct, `clip-sh-${uid}`)}<title>Emergency fund: ${efFull ? "fully funded" : fv.shield === "warning" ? "below a quarter" : "partly funded"}</title></g></g>
-    <g transform="translate(50 8)"><g data-pop="insured" data-val="${insured ? 1 : 0}" class="${insured ? "protected" : ""}">${img(insured ? "shield-insurance-on" : "shield-insurance-warning", 0, 0, 36, 42)}<title>Insurance: ${insured ? "covered" : "no cover"}</title></g></g>` : "";
+    <g transform="translate(8 8)"><g data-pop="shield" data-val="${fv.shield}" data-action="jump" data-id="ef" class="tap ${efFull ? "protected" : ""}">${emergencyShield(fv.shield, fv.snap.ef.pct, `clip-sh-${uid}`)}<title>Emergency fund: ${efFull ? "fully funded" : fv.shield === "warning" ? "below a quarter" : "partly funded"}</title></g></g>
+    <g transform="translate(50 8)"><g data-pop="insured" data-val="${insured ? 1 : 0}" data-action="jump" data-id="protection" class="tap ${insured ? "protected" : ""}">${img(insured ? "shield-insurance-on" : "shield-insurance-warning", 0, 0, 36, 42)}<title>Insurance: ${insured ? "covered" : "no cover"}</title></g></g>` : "";
 
   const tier = clamp(fv.vaultTier, 1, 4);
   const vault = show.vault ? `
-    <g data-pop="vault" data-val="${tier}">
+    <g data-pop="vault" data-val="${tier}" data-action="jump" data-id="bank" class="tap">
       ${img("safe-open", 252, 156, 84, 92)}
       ${img(["vault-coins", "vault-notes", "vault-bars", "vault-chest"][tier - 1], 270, 194, 48, 27)}
+      <title>Bank balance</title>
     </g>
     <g class="tierfx" data-pop="tierfx" data-val="${tier}">
       <g class="seq4 door">${frames("safe-door", 3, 252, 156, 84, 92)}</g>
@@ -150,9 +151,10 @@ function sceneSvg(fv, { show, calm = false, uid = "w", insured = true, quests = 
     </g>` : "";
 
   const avatar = show.avatar ? `
-    <g data-action="avatar-tap" class="tap">
+    <g data-action="jump" data-id="mood" class="tap">
       ${img(`avatar-${AVATAR_SET}-${mood}`, 112, 108, 116, 162)}
       <rect x="126" y="112" width="88" height="158" fill="transparent"/>
+      <title>How future you is feeling, and why</title>
     </g>` : "";
   // quests from the letter: a notification in the top-right corner with the number still open
   const questNote = quests != null && !calm ? `
@@ -171,5 +173,6 @@ function sceneSvg(fv, { show, calm = false, uid = "w", insured = true, quests = 
       <defs><filter id="${gs}"><feColorMatrix type="saturate" values="0"/></filter></defs>
       ${backdrop(mood)}
       ${tripArt}${pictures}${shields}${vault}${loan}${coins}${avatar}${questNote}${bubble}
+      ${frame ? `<rect x="3" y="3" width="334" height="264" rx="12" fill="none" stroke="#f2c230" stroke-width="6"/><rect x="6.5" y="6.5" width="327" height="257" rx="9" fill="none" stroke="#fff3b0" stroke-width="1.5"/>` : ""}
     </svg>`;
 }
