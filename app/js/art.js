@@ -14,7 +14,7 @@ const frames = (base, n, x, y, w, h) => Array.from({ length: n }, (_, i) =>
   img(`${base}-${String(i + 1).padStart(2, "0")}`, x, y, w, h, `class="fr" style="--i:${i}"`)).join("");
 
 /* ---------- avatar: male or female set, 6 moods (320 x 448 images) ---------- */
-let AVATAR_SET = "m"; // "m" | "f", chosen in the window's customise menu
+let AVATAR_SET = "f"; // "m" | "f", chosen in the window's customise menu
 const avatarMood = (mood, calm) => calm && (mood === "stressed" || mood === "worried") ? "calm" : mood;
 const avatarLabel = m => `Avatar looking ${m === "calm" ? "concerned and supportive" : m}`;
 
@@ -152,7 +152,10 @@ function sceneSvg(fv, { show, calm = false, uid = "w", insured = true, quests = 
 
   const avatar = show.avatar ? `
     <g data-action="jump" data-id="mood" class="tap">
-      ${img(`avatar-${AVATAR_SET}-${mood}`, 112, 108, 116, 162)}
+      <g class="moodfx" data-pop="mood-${uid}" data-val="${mood}">
+        <g class="cele-still">${img(`avatar-${AVATAR_SET}-${mood}`, 112, 108, 116, 162)}</g>
+        ${mood === "thriving" ? `<g class="celebrate">${frames(`avatar-${AVATAR_SET}-celebrate`, 6, 112, 108, 116, 162)}</g>` : ""}
+      </g>
       <rect x="126" y="112" width="88" height="158" fill="transparent"/>
       <title>How future you is feeling, and why</title>
     </g>` : "";

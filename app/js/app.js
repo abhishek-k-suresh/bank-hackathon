@@ -5,11 +5,11 @@
 const defaultShow = () => ({ auto: true, avatar: true, hero: true, others: true, shield: true, vault: true, loan: true });
 const ui = {
   tab: "home", scenario: "normal", customTx: null, live: false, chat: [], expanded: new Set(), slider: 24, hardshipDone: [], scene: null,
-  future: { years: 0, track: "same" },   // the future slider, shared by the window panel and the main panel
+  future: { years: 0, track: "plan" },   // the future slider, shared by the window panel and the main panel
   assumptions: { ...ASSUMPTIONS },       // editable in "Show calculation"
   windowShow: defaultShow(), gearOpen: false, moodOpen: false, moodLive: null,
   calcOpen: false, form: null, policies: [],
-  avatarSet: "m", // "m" | "f": which avatar set the window shows
+  avatarSet: "f", // "m" | "f": which avatar set the window shows
   customGoals: [],                  // ids of goals created in the main panel (removed on reset)
   bgOpen: false,                    // background picker on the window page
   questsSeen: new Set(),            // quests already announced as done (so each unlock is toasted once)
@@ -403,7 +403,9 @@ const fvParts = {
 // the text nodes that carry a number (outside the picture): these get a soft highlight when the slider changes them
 const valueLeaves = root => [...root.querySelectorAll("b, span, small, p, .bigline")].filter(el => !el.children.length && !el.closest("svg") && /\d/.test(el.textContent));
 function refreshFuture({ flash = false } = {}) {
+  const was = FV && FV.mood.mood;
   FV = futureView(S, ui.future.years);
+  if (flash && FV.mood.mood === "thriving" && was !== "thriving") burst(); // arriving at the best future: a short confetti burst
   document.querySelectorAll("[data-fv]").forEach(el => {
     const before = flash ? valueLeaves(el).map(x => x.textContent) : null;
     el.innerHTML = fvParts[el.dataset.fv](); wireCharts(el);
@@ -1118,7 +1120,7 @@ function handle(action, el) {
     case "open-main": ui.tab = "main"; ui.gearOpen = false; render(); break;
     case "avatar-tap": ui.moodOpen = !ui.moodOpen; refreshFuture(); if (ui.moodOpen) fetchMoodLive(); break;
     case "calm-talk": goToHardship(); break;
-    case "win-gear": ui.gearOpen = !ui.gearOpen; render(); break;
+    case "win-gear": ui.gearOpen = !ui.gearOpen; ui.bgOpen = false; render(); break; // only one of the two window menus is open at a time
     case "win-toggle": ui.windowShow[el.dataset.id] = el.checked; ui.windowShow.auto = false; render(); break;
     case "win-auto": ui.windowShow = defaultShow(); render(); break;
     case "win-avatar": ui.avatarSet = AVATAR_SET = el.dataset.id; render(); break;
@@ -1140,7 +1142,7 @@ function handle(action, el) {
       refreshFuture(); break;
     }
     case "form-cancel": ui.form = null; refreshFuture(); break;
-    case "bg-edit": ui.bgOpen = !ui.bgOpen; render(); break;
+    case "bg-edit": ui.bgOpen = !ui.bgOpen; ui.gearOpen = false; render(); break;
     case "bg-set": {
       const id = el.dataset.id;
       if (!unlockedBgs().includes(id)) { const q = quests().find(x => x.reward.kind === "bg" && x.reward.id === id); toast(`🔒 Finish the quest "${q ? q.title : "in your letter"}" to unlock this`); break; }
@@ -1285,7 +1287,7 @@ const resetHardshipChoices = () => { ui.hardshipDone = []; actions.coverFromSavi
 function scene(n) {
   clearSceneTimers();
   ui.scene = n; ui.expanded.clear(); ui.form = null; ui.gearOpen = false; ui.calcOpen = false;
-  ui.future = { years: 0, track: "same" }; ui.moodOpen = false;
+  ui.future = { years: 0, track: n === "5" ? "same" : "plan" }; ui.moodOpen = false;
   if (n === "1") { ui.scenario = "normal"; ui.tab = "insights"; }
   if (n === "2") { ui.scenario = "normal"; ui.tab = "goal"; }
   if (n === "3") { ui.scenario = "normal"; ui.tab = "rewards"; }
@@ -1316,7 +1318,7 @@ function resetDemo() {
   Object.entries(ui.goalEdits).forEach(([id, orig]) => { const G = GOALS.find(g => g.id === id); if (G) { Object.keys(G).forEach(k => delete G[k]); Object.assign(G, orig); } });
   ui.goalEdits = {}; ui.searchOpen = false; ui.search = "";
   ui.customGoals = []; ui.quests = { delivery: 0, coffee: 0 }; ui.questsSeen = new Set();
-  Object.assign(ui, { scenario: "normal", tab: "home", chat: [], slider: 24, hardshipDone: [], customTx: null, scene: null, future: { years: 0, track: "same" }, assumptions: { ...ASSUMPTIONS }, windowShow: defaultShow(), gearOpen: false, moodOpen: false, moodLive: null, calcOpen: false, form: null, policies: [] });
+  Object.assign(ui, { scenario: "normal", tab: "home", chat: [], slider: 24, hardshipDone: [], customTx: null, scene: null, future: { years: 0, track: "plan" }, assumptions: { ...ASSUMPTIONS }, windowShow: defaultShow(), gearOpen: false, moodOpen: false, moodLive: null, calcOpen: false, form: null, policies: [] });
   ui.expanded.clear();
   render(); toast("Demo reset");
 }

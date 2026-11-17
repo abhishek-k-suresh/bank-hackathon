@@ -1,10 +1,10 @@
-# Future Me - AI money companion (Westpac AI & Banking hackathon prototype)
+# Future Me — AI money companion (Westpac AI & Banking hackathon prototype)
 
 A gamified AI companion inside the banking app. It reads a customer's spending, predicts where their
 money is heading, turns that into a goal plan they can actually follow, rewards the habits that get them
 there, and switches to a calm, human-first mode when a tough month is coming.
 
-The demo customer is fictional: first name **Abhi**, second name **S**, 27, living in **Surfers Paradise**.
+The demo customer is fictional: first name **Sara**, second name **D**, 27, living in **Surfers Paradise**.
 
 Everything runs **offline from this folder**. No build step, no frameworks, no network needed. All artwork is inline SVG.
 
@@ -39,7 +39,7 @@ The **Ask** tab works in both modes: scripted answers offline, live Claude answe
 ## Pages and buttons
 
 **Home (🏠)**
-- Greeting "Hi Abhi" with today's date.
+- Greeting "Hi Sara" with today's date.
 - **Your window**: a picture of the whole account with no numbers.
   - Avatar in the centre with five moods: thriving, happy, okay, worried, stressed. Tap it for one plain-English sentence explaining the mood (scripted offline, live Claude if the server is up).
   - Background scene is the hero goal. The Ford GT 40 is drawn in colour up to the percent saved and greyscale beyond it. Other goals (the Japan trip) appear as postcards that fill the same way.
@@ -142,7 +142,7 @@ Balances, goals, the loan and the emergency fund stay at the demo customer's val
 - **Insights**: recurring charges grouped by purpose (two music apps = overlap), trial conversions, merchant-by-weekday habits, spend in the 3 days after payday vs the other 11.
 - **Goal date (Goal tab)**: months until `savings × (1 + r/12)^n + monthly × ((1 + r/12)^n − 1)/(r/12)` reaches the target, with r = 4.5% p.a. plus 0.5% for six months when the bonus-interest offer is unlocked. Each plan step adds its monthly amount.
 - **60-day runway**: today's balance, pay every second Thursday, rent, bills, subscriptions and the loan repayment on their usual days, everyday spending spread evenly per day. The minimum is the number that triggers the hardship radar.
-- **Emergency fund target**: 3 × (essential categories + loan repayments) per month. Today that is 3 × $2,889 = $8,668, and the fund holds $3,450 (40%).
+- **Emergency fund target**: 3 × (essential categories + loan repayments) per month. Today that is 3 × $2,889 = $8,668, and the fund holds $200 (2%).
 - **Rewards**: all fundable by a bank (bonus interest, fee waiver, rate review) and tied to behaviour that is good for the customer anyway.
 
 **The future slider: a month-by-month simulation**
@@ -185,7 +185,7 @@ One score from four parts, then cut into five moods:
 
 Thriving is 90 and above, happy 78, okay 62, worried 38, and stressed below that. A runway below zero or any credit card debt is always stressed. In calm mode the avatar shows a supportive face instead of the stressed or worried one.
 
-**Vault tiers**: coins below $5,000 of savings, notes to $12,000, gold bars to $22,000, treasure chest above. Finished goals count as bought, so their money leaves the vault.
+**Vault tiers**: coins below $5,000 of savings, notes to $12,000, gold bars to $18,000, treasure chest above. Finished goals count as bought, so their money leaves the vault.
 
 **Things to be ready to explain**
 
